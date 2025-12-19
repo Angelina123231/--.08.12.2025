@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Афиша мероприятий - TicketBook</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="header">
+        <nav class="nav container">
+            <div class="logo">
+                <a href="index.html" class="logo-link">
+                    <i class="fas fa-ticket-alt"></i>
+                    TicketBook
+                </a>
+            </div>
+            
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-home"></i> Главная
+                </a>
+                <a href="events.html" class="nav-link active">
+                    <i class="fas fa-calendar-alt"></i> Афиша
+                </a>
+                <a href="auth.html" class="nav-link">
+                    <i class="fas fa-user"></i> Войти
+                </a>
+                <a href="profile.html" class="nav-link">
+                    <i class="fas fa-user-circle"></i> Профиль
+                </a>
+                <a href="admin.html" class="nav-link admin-link">
+                    <i class="fas fa-cog"></i> Админка
+                </a>
+            </div>
+            
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Поиск и фильтры -->
+    <section class="section section-light">
+        <div class="container">
+            <h1 class="section-title">Афиша мероприятий</h1>
+            
+            <div class="search-filters">
+                <!-- Поиск -->
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Поиск мероприятий..." class="form-input">
+                    <button class="btn btn-primary" onclick="searchEvents()">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                
+                <!-- Фильтры -->
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label class="form-label">Категория</label>
+                        <select id="categoryFilter" class="form-select" onchange="filterEvents()">
+                            <option value="all">Все категории</option>
+                            <option value="Концерт">Концерты</option>
+                            <option value="Театр">Театр</option>
+                            <option value="Выставка">Выставки</option>
+                            <option value="Кино">Кино</option>
+                            <option value="Фестиваль">Фестивали</option>
+                            <option value="Спорт">Спорт</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="form-label">Дата от</label>
+                        <input type="date" id="dateFrom" class="form-input" onchange="filterEvents()">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="form-label">Дата до</label>
+                        <input type="date" id="dateTo" class="form-input" onchange="filterEvents()">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="form-label">Цена до</label>
+                        <input type="range" id="priceRange" min="0" max="10000" step="500" value="10000" 
+                               class="form-range" oninput="updatePriceValue()" onchange="filterEvents()">
+                        <span id="priceValue">до 10 000 ₽</span>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="form-label">Сортировка</label>
+                        <select id="sortBy" class="form-select" onchange="sortEvents()">
+                            <option value="date_asc">По дате (сначала ближайшие)</option>
+                            <option value="date_desc">По дате (сначала дальние)</option>
+                            <option value="price_asc">По цене (дешевые)</option>
+                            <option value="price_desc">По цене (дорогие)</option>
+                            <option value="name_asc">По названию (А-Я)</option>
+                            <option value="name_desc">По названию (Я-А)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="filter-buttons">
+                    <button class="btn btn-outline" onclick="resetFilters()">
+                        <i class="fas fa-redo"></i> Сбросить фильтры
+                    </button>
+                    <button class="btn btn-primary" onclick="filterEvents()">
+                        <i class="fas fa-filter"></i> Применить фильтры
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Список мероприятий -->
+    <section class="section">
+        <div class="container">
+            <div class="events-header">
+                <h2 id="eventsCount" class="section-title">Все мероприятия</h2>
+                <div class="view-options">
+                    <button class="view-btn active" onclick="changeView('grid')">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button class="view-btn" onclick="changeView('list')">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Контейнер для мероприятий -->
+            <div id="eventsContainer" class="events-grid">
+                <!-- Здесь JavaScript добавит мероприятия -->
+            </div>
+            
+            <!-- Пагинация -->
+            <div class="pagination" id="pagination">
+                <!-- Здесь будет пагинация -->
+            </div>
+            
+            <!-- Сообщение если нет мероприятий -->
+            <div id="noEventsMessage" class="no-data" style="display: none;">
+                <i class="fas fa-calendar-times fa-3x"></i>
+                <h3>Мероприятия не найдены</h3>
+                <p>Попробуйте изменить параметры поиска или сбросить фильтры</p>
+                <button class="btn btn-primary" onclick="resetFilters()">
+                    <i class="fas fa-redo"></i> Сбросить фильтры
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Быстрая навигация по категориям -->
+    <section class="section section-light">
+        <div class="container">
+            <h2 class="section-title">Категории мероприятий</h2>
+            
+            <div class="categories-grid">
+                <a href="#" class="category-card" onclick="setCategoryFilter('Концерт')">
+                    <div class="category-icon">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <h3>Концерты</h3>
+                    <p>Рок, поп, классика, джаз</p>
+                </a>
+                
+                <a href="#" class="category-card" onclick="setCategoryFilter('Театр')">
+                    <div class="category-icon">
+                        <i class="fas fa-theater-masks"></i>
+                    </div>
+                    <h3>Театр</h3>
+                    <p>Спектакли, мюзиклы, драма</p>
+                </a>
+                
+                <a href="#" class="category-card" onclick="setCategoryFilter('Выставка')">
+                    <div class="category-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <h3>Выставки</h3>
+                    <p>Искусство, фотография, наука</p>
+                </a>
+                
+                <a href="#" class="category-card" onclick="setCategoryFilter('Кино')">
+                    <div class="category-icon">
+                        <i class="fas fa-film"></i>
+                    </div>
+                    <h3>Кино</h3>
+                    <p>Премьеры, фестивали, ретро</p>
+                </a>
+                
+                <a href="#" class="category-card" onclick="setCategoryFilter('Фестиваль')">
+                    <div class="category-icon">
+                        <i class="fas fa-campground"></i>
+                    </div>
+                    <h3>Фестивали</h3>
+                    <p>Музыка, еда, культура</p>
+                </a>
+                
+                <a href="#" class="category-card" onclick="setCategoryFilter('Спорт')">
+                    <div class="category-icon">
+                        <i class="fas fa-futbol"></i>
+                    </div>
+                    <h3>Спорт</h3>
+                    <p>Матчи, соревнования, фитнес</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Подвал -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>TicketBook</h3>
+                    <p>Система онлайн-бронирования билетов на мероприятия</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Контакты</h3>
+                    <p><i class="fas fa-envelope"></i> info@ticketbook.ru</p>
+                    <p><i class="fas fa-phone"></i> +7 (999) 123-45-67</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Быстрые ссылки</h3>
+                    <a href="index.html">Главная</a>
+                    <a href="events.html">Афиша</a>
+                    <a href="auth.html">Вход/Регистрация</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 TicketBook. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Специфичные функции для страницы events.html
+        
+        let currentView = 'grid';
+        let eventsPerPage = 6;
+        let currentPage = 1;
+        let filteredEvents = [];
+        
+        // Загрузка мероприятий при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            loadEvents();
+            setupDateInputs();
+        });
+        
+        // Загрузка мероприятий
+        function loadEvents() {
+            const eventsData = localStorage.getItem('ticketbook_events');
+            if (eventsData) {
+                events = JSON.parse(eventsData);
+                filteredEvents = [...events];
+                displayEvents();
+            } else {
+                // Если нет данных, загружаем тестовые
+                loadDefaultEvents();
+            }
+        }
+        
+        // Загрузка тестовых мероприятий
+        function loadDefaultEvents() {
+            events = [
+                {
+                    id: 1,
+                    title: 'Концерт рок-группы "Восток"',
+                    description: 'Грандиозный концерт популярной рок-группы с новой программой и световым шоу',
+                    date: '2025-01-15T19:00:00',
+                    location: 'Клуб Arena',
+                    price: 1500,
+                    total_tickets: 200,
+                    available_tickets: 45,
+                    image_url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f',
+                    category: 'Концерт'
+                },
+                {
+                    id: 2,
+                    title: 'Выставка современного искусства',
+                    description: 'Современное искусство от лучших художников страны. Более 100 работ',
+                    date: '2025-01-20T10:00:00',
+                    location: 'Музей современного искусства',
+                    price: 500,
+                    total_tickets: 100,
+                    available_tickets: 100,
+                    image_url: 'https://images.unsplash.com/photo-1563089145-599997674d42',
+                    category: 'Выставка'
+                },
+                {
+                    id: 3,
+                    title: 'Спектакль "Гамлет"',
+                    description: 'Классический спектакль в современной постановке от режиссера Иванова',
+                    date: '2025-01-25T18:30:00',
+                    location: 'Драматический театр',
+                    price: 1200,
+                    total_tickets: 150,
+                    available_tickets: 25,
+                    image_url: 'https://images.unsplash.com/photo-1579092529237-8d27f5c9b9c4',
+                    category: 'Театр'
+                },
+                {
+                    id: 4,
+                    title: 'Кинофестиваль "Новое кино"',
+                    description: 'Премьерные показы новых фильмов от молодых режиссеров',
+                    date: '2025-02-01T16:00:00',
+                    location: 'Кинотеатр Премьер',
+                    price: 800,
+                    total_tickets: 300,
+                    available_tickets: 300,
+                    image_url: 'https://images.unsplash.com/photo-1489599809516-9827b6d1cf13',
+                    category: 'Кино'
+                },
+                {
+                    id: 5,
+                    title: 'Фестиваль еды "Вкус мира"',
+                    description: 'Гастрономический праздник с шеф-поварами из разных стран',
+                    date: '2025-02-10T12:00:00',
+                    location: 'Парк Горького',
+                    price: 1000,
+                    total_tickets: 500,
+                    available_tickets: 500,
+                    image_url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1',
+                    category: 'Фестиваль'
+                },
+                {
+                    id: 6,
+                    title: 'Футбольный матч Чемпионата',
+                    description: 'Центральный матч чемпионата между лидерами турнира',
+                    date: '2025-02-15T20:00:00',
+                    location: 'Стадион "Олимп"',
+                    price: 2000,
+                    total_tickets: 50000,
+                    available_tickets: 15000,
+                    image_url: 'https://images.unsplash.com/photo-1575361204480-aadea25e6e68',
+                    category: 'Спорт'
+                },
+                {
+                    id: 7,
+                    title: 'Концерт классической музыки',
+                    description: 'Симфонический оркестр исполняет шедевры классики',
+                    date: '2025-01-30T19:30:00',
+                    location: 'Концертный зал "Филармония"',
+                    price: 1800,
+                    total_tickets: 800,
+                    available_tickets: 300,
+                    image_url: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04',
+                    category: 'Концерт'
+                },
+                {
+                    id: 8,
+                    title: 'Выставка фотографии "Мир глазами"',
+                    description: 'Фотографии дикой природы и путешествий от известных фотографов',
+                    date: '2025-02-05T11:00:00',
+                    location: 'Галерея искусств',
+                    price: 400,
+                    total_tickets: 150,
+                    available_tickets: 150,
+                    image_url: 'https://images.unsplash.com/photo-1520857014576-2c4f4c8b0c9c',
+                    category: 'Выставка'
+                },
+                {
+                    id: 9,
+                    title: 'Балет "Лебединое озеро"',
+                    description: 'Легендарный балет в исполнении ведущей труппы страны',
+                    date: '2025-02-20T19:00:00',
+                    location: 'Большой театр',
+                    price: 2500,
+                    total_tickets: 1200,
+                    available_tickets: 50,
+                    image_url: 'https://images.unsplash.com/photo-1519861531473-920034658307',
+                    category: 'Театр'
+                }
+            ];
+            
+            localStorage.setItem('ticketbook_events', JSON.stringify(events));
+            filteredEvents = [...events];
+            displayEvents();
+        }
+        
+        // Отображение мероприятий
+        function displayEvents() {
+            const container = document.getElementById('eventsContainer');
+            const noEventsMessage = document.getElementById('noEventsMessage');
+            
+            if (!container) return;
+            
+            if (filteredEvents.length === 0) {
+                container.style.display = 'none';
+                noEventsMessage.style.display = 'block';
+                document.getElementById('eventsCount').textContent = 'Мероприятия не найдены';
+                return;
+            }
+            
+            container.style.display = currentView === 'grid' ? 'grid' : 'block';
+            noEventsMessage.style.display = 'none';
+            
+            // Пагинация
+            const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
+            const startIndex = (currentPage - 1) * eventsPerPage;
+            const endIndex = startIndex + eventsPerPage;
+            const pageEvents = filteredEvents.slice(startIndex, endIndex);
+            
+            // Обновление заголовка
+            document.getElementById('eventsCount').textContent = 
+                `Найдено мероприятий: ${filteredEvents.length}`;
+            
+            // Отображение мероприятий
+            if (currentView === 'grid') {
+                container.className = 'events-grid';
+                container.innerHTML = pageEvents.map(event => createEventCard(event)).join('');
+            } else {
+                container.className = 'events-list';
+                container.innerHTML = pageEvents.map(event => createEventListItem(event)).join('');
+            }
+            
+            // Отображение пагинации
+            displayPagination(totalPages);
+        }
+        
+        // Создание карточки мероприятия (вид сеткой)
+        function createEventCard(event) {
+            const date = new Date(event.date);
+            const formattedDate = date.toLocaleDateString('ru-RU', {
+                weekday: 'short',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            const isAlmostSoldOut = event.available_tickets < (event.total_tickets * 0.1);
+            const isFewTickets = event.available_tickets < 10;
+            
+            return `
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="${event.image_url}" alt="${event.title}" loading="lazy">
+                        <span class="event-category">${event.category}</span>
+                        ${isAlmostSoldOut ? '<span class="event-warning">Почти продано</span>' : ''}
+                    </div>
+                    <div class="event-content">
+                        <h3 class="event-title">${event.title}</h3>
+                        <p class="event-description">${event.description}</p>
+                        
+                        <div class="event-info">
+                            <p><i class="far fa-calendar"></i> ${formattedDate}</p>
+                            <p><i class="fas fa-map-marker-alt"></i> ${event.location}</p>
+                            <p><i class="fas fa-ticket-alt"></i> 
+                                ${isFewTickets ? '<span style="color: #ff6b6b;">' : ''}
+                                Осталось билетов: ${event.available_tickets}
+                                ${isFewTickets ? '</span>' : ''}
+                            </p>
+                        </div>
+                        
+                        <div class="event-footer">
+                            <div>
+                                <span class="event-price">${event.price.toLocaleString('ru-RU')} ₽</span>
+                                ${isFewTickets ? '<div class="price-warning">Последние билеты!</div>' : ''}
+                            </div>
+                            <div>
+                                <a href="event-detail.html?id=${event.id}" class="btn btn-outline">
+                                    <i class="fas fa-info-circle"></i> Подробнее
+                                </a>
+                                <button class="btn btn-primary" onclick="bookEvent(${event.id})">
+                                    <i class="fas fa-shopping-cart"></i> Забронировать
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Создание элемента списка мероприятий (вид списком)
+        function createEventListItem(event) {
+            const date = new Date(event.date);
+            const formattedDate = date.toLocaleDateString('ru-RU', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            const formattedTime = date.toLocaleTimeString('ru-RU', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            return `
+                <div class="event-list-item">
+                    <div class="event-list-image">
+                        <img src="${event.image_url}" alt="${event.title}">
+                    </div>
+                    <div class="event-list-content">
+                        <div class="event-list-header">
+                            <h3>${event.title}</h3>
+                            <span class="event-category">${event.category}</span>
+                        </div>
+                        <p class="event-list-description">${event.description}</p>
+                        <div class="event-list-details">
+                            <div class="detail">
+                                <i class="far fa-calendar"></i>
+                                <span>${formattedDate}, ${formattedTime}</span>
+                            </div>
+                            <div class="detail">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>${event.location}</span>
+                            </div>
+                            <div class="detail">
+                                <i class="fas fa-ticket-alt"></i>
+                                <span>Осталось билетов: ${event.available_tickets}</span>
+                            </div>
+                            <div class="detail">
+                                <i class="fas fa-tag"></i>
+                                <span class="event-price">${event.price.toLocaleString('ru-RU')} ₽</span>
+                            </div>
+                        </div>
+                        <div class="event-list-actions">
+                            <a href="event-detail.html?id=${event.id}" class="btn btn-outline">
+                                <i class="fas fa-info-circle"></i> Подробнее
+                            </a>
+                            <button class="btn btn-primary" onclick="bookEvent(${event.id})">
+                                <i class="fas fa-shopping-cart"></i> Забронировать
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Отображение пагинации
+        function displayPagination(totalPages) {
+            const paginationContainer = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            
+            let paginationHTML = `
+                <button class="pagination-btn" onclick="changePage(${currentPage - 1})" 
+                        ${currentPage === 1 ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-left"></i> Назад
+                </button>
+            `;
+            
+            // Показываем первые 3 страницы, текущую и последние 3
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || 
+                    (i >= currentPage - 1 && i <= currentPage + 1) ||
+                    (currentPage <= 3 && i <= 5) ||
+                    (currentPage >= totalPages - 2 && i >= totalPages - 4)) {
+                    
+                    if (i === currentPage) {
+                        paginationHTML += `<span class="pagination-current">${i}</span>`;
+                    } else {
+                        paginationHTML += `<button class="pagination-btn" onclick="changePage(${i})">${i}</button>`;
+                    }
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    paginationHTML += `<span class="pagination-dots">...</span>`;
+                }
+            }
+            
+            paginationHTML += `
+                <button class="pagination-btn" onclick="changePage(${currentPage + 1})" 
+                        ${currentPage === totalPages ? 'disabled' : ''}>
+                    Вперед <i class="fas fa-chevron-right"></i>
+                </button>
+            `;
+            
+            paginationContainer.innerHTML = paginationHTML;
+        }
+        
+        // Изменение страницы
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
+            
+            if (page < 1 || page > totalPages) return;
+            
+            currentPage = page;
+            displayEvents();
+            
+            // Прокрутка к верху
+            window.scrollTo({
+                top: document.querySelector('.events-header').offsetTop - 100,
+                behavior: 'smooth'
+            });
+        }
+        
+        // Изменение вида отображения
+        function changeView(view) {
+            currentView = view;
+            
+            // Обновление активных кнопок
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            if (view === 'grid') {
+                document.querySelector('.view-btn:nth-child(1)').classList.add('active');
+                eventsPerPage = 6;
+            } else {
+                document.querySelector('.view-btn:nth-child(2)').classList.add('active');
+                eventsPerPage = 4;
+            }
+            
+            currentPage = 1;
+            displayEvents();
+        }
+        
+        // Поиск мероприятий
+        function searchEvents() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (!searchTerm) {
+                filteredEvents = [...events];
+            } else {
+                filteredEvents = events.filter(event => 
+                    event.title.toLowerCase().includes(searchTerm) ||
+                    event.description.toLowerCase().includes(searchTerm) ||
+                    event.location.toLowerCase().includes(searchTerm) ||
+                    event.category.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            applyFilters();
+        }
+        
+        // Фильтрация мероприятий
+        function filterEvents() {
+            const category = document.getElementById('categoryFilter').value;
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+            const maxPrice = parseInt(document.getElementById('priceRange').value);
+            
+            filteredEvents = events.filter(event => {
+                // Фильтр по категории
+                if (category !== 'all' && event.category !== category) {
+                    return false;
+                }
+                
+                // Фильтр по дате
+                const eventDate = new Date(event.date);
+                if (dateFrom && new Date(eventDate) < new Date(dateFrom + 'T00:00:00')) {
+                    return false;
+                }
+                if (dateTo && new Date(eventDate) > new Date(dateTo + 'T23:59:59')) {
+                    return false;
+                }
+                
+                // Фильтр по цене
+                if (event.price > maxPrice) {
+                    return false;
+                }
+                
+                return true;
+            });
+            
+            applyFilters();
+        }
+        
+        // Сортировка мероприятий
+        function sortEvents() {
+            const sortValue = document.getElementById('sortBy').value;
+            
+            filteredEvents.sort((a, b) => {
+                switch(sortValue) {
+                    case 'date_asc':
+                        return new Date(a.date) - new Date(b.date);
+                    case 'date_desc':
+                        return new Date(b.date) - new Date(a.date);
+                    case 'price_asc':
+                        return a.price - b.price;
+                    case 'price_desc':
+                        return b.price - a.price;
+                    case 'name_asc':
+                        return a.title.localeCompare(b.title);
+                    case 'name_desc':
+                        return b.title.localeCompare(a.title);
+                    default:
+                        return 0;
+                }
+            });
+            
+            currentPage = 1;
+            displayEvents();
+        }
+        
+        // Применение фильтров
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (searchTerm) {
+                filteredEvents = filteredEvents.filter(event => 
+                    event.title.toLowerCase().includes(searchTerm) ||
+                    event.description.toLowerCase().includes(searchTerm) ||
+                    event.location.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            currentPage = 1;
+            sortEvents();
+        }
+        
+        // Сброс фильтров
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('categoryFilter').value = 'all';
+            document.getElementById('dateFrom').value = '';
+            document.getElementById('dateTo').value = '';
+            document.getElementById('priceRange').value = 10000;
+            document.getElementById('sortBy').value = 'date_asc';
+            
+            updatePriceValue();
+            filteredEvents = [...events];
+            currentPage = 1;
+            displayEvents();
+        }
+        
+        // Установка фильтра по категории
+        function setCategoryFilter(category) {
+            document.getElementById('categoryFilter').value = category;
+            filterEvents();
+            
+            // Прокрутка к фильтрам
+            document.querySelector('.search-filters').scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+        
+        // Обновление значения цены
+        function updatePriceValue() {
+            const price = document.getElementById('priceRange').value;
+            document.getElementById('priceValue').textContent = `до ${parseInt(price).toLocaleString('ru-RU')} ₽`;
+        }
+        
+        // Настройка дат по умолчанию
+        function setupDateInputs() {
+            const today = new Date().toISOString().split('T')[0];
+            const nextMonth = new Date();
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+            const nextMonthStr = nextMonth.toISOString().split('T')[0];
+            
+            document.getElementById('dateFrom').min = today;
+            document.getElementById('dateTo').min = today;
+            document.getElementById('dateTo').value = nextMonthStr;
+            
+            // Запуск фильтрации при загрузке
+            setTimeout(filterEvents, 100);
+        }
+        
+        // Быстрое бронирование
+        function bookEvent(eventId) {
+            if (!currentUser) {
+                showNotification('Для бронирования необходимо войти в систему', 'error');
+                setTimeout(() => {
+                    window.location.href = 'auth.html?redirect=' + encodeURIComponent(window.location.href);
+                }, 1500);
+                return;
+            }
+            
+            const event = events.find(e => e.id === eventId);
+            if (event && event.available_tickets > 0) {
+                window.location.href = `event-detail.html?id=${eventId}`;
+            } else {
+                showNotification('Билеты на это мероприятие закончились', 'error');
+            }
+        }
+        
+        // Добавление стилей для страницы events.html
+        const eventsStyles = document.createElement('style');
+        eventsStyles.textContent = `
+            .search-filters {
+                background: white;
+                padding: 2rem;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                margin-bottom: 2rem;
+            }
+            
+            .search-box {
+                display: flex;
+                gap: 1rem;
+                margin-bottom: 2rem;
+            }
+            
+            .search-box input {
+                flex: 1;
+            }
+            
+            .filters-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1.5rem;
+                margin-bottom: 2rem;
+            }
+            
+            .filter-group {
+                margin-bottom: 1rem;
+            }
+            
+            .form-range {
+                width: 100%;
+                margin-top: 0.5rem;
+            }
+            
+            .filter-buttons {
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+            }
+            
+            .events-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 2rem;
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+            
+            .view-options {
+                display: flex;
+                gap: 0.5rem;
+            }
+            
+            .view-btn {
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 2px solid #ddd;
+                background: white;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            
+            .view-btn:hover,
+            .view-btn.active {
+                border-color: #4a6bdf;
+                background-color: #4a6bdf;
+                color: white;
+            }
+            
+            .events-list {
+                display: flex;
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .event-list-item {
+                display: grid;
+                grid-template-columns: 200px 1fr;
+                gap: 1.5rem;
+                background: white;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            }
+            
+            .event-list-image {
+                height: 200px;
+            }
+            
+            .event-list-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            
+            .event-list-content {
+                padding: 1.5rem 1.5rem 1.5rem 0;
+            }
+            
+            .event-list-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 1rem;
+            }
+            
+            .event-list-description {
+                color: #666;
+                margin-bottom: 1rem;
+                line-height: 1.6;
+            }
+            
+            .event-list-details {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+                padding: 1rem;
+                background: #f8f9fa;
+                border-radius: 5px;
+            }
+            
+            .detail {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                color: #555;
+            }
+            
+            .detail i {
+                color: #4a6bdf;
+                width: 20px;
+            }
+            
+            .event-list-actions {
+                display: flex;
+                gap: 1rem;
+            }
+            
+            .categories-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 1.5rem;
+            }
+            
+            .category-card {
+                display: block;
+                background: white;
+                padding: 1.5rem;
+                border-radius: 10px;
+                text-align: center;
+                text-decoration: none;
+                color: inherit;
+                box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+                transition: all 0.3s ease;
+            }
+            
+            .category-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+                color: #4a6bdf;
+            }
+            
+            .category-icon {
+                width: 60px;
+                height: 60px;
+                background: linear-gradient(135deg, #4a6bdf 0%, #6c8eff 100%);
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 1rem;
+                font-size: 1.5rem;
+            }
+            
+            .category-card h3 {
+                margin-bottom: 0.5rem;
+                font-size: 1.1rem;
+            }
+            
+            .category-card p {
+                color: #777;
+                font-size: 0.9rem;
+            }
+            
+            .pagination {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 0.5rem;
+                margin-top: 3rem;
+                flex-wrap: wrap;
+            }
+            
+            .pagination-btn {
+                padding: 0.5rem 1rem;
+                border: 1px solid #ddd;
+                background: white;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            
+            .pagination-btn:hover:not(:disabled) {
+                border-color: #4a6bdf;
+                background-color: #4a6bdf;
+                color: white;
+            }
+            
+            .pagination-btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+            
+            .pagination-current {
+                padding: 0.5rem 1rem;
+                background-color: #4a6bdf;
+                color: white;
+                border-radius: 5px;
+                font-weight: bold;
+            }
+            
+            .pagination-dots {
+                padding: 0.5rem;
+            }
+            
+            .no-data {
+                text-align: center;
+                padding: 3rem;
+                color: #777;
+            }
+            
+            .no-data i {
+                margin-bottom: 1rem;
+                color: #ddd;
+            }
+            
+            .no-data h3 {
+                margin-bottom: 1rem;
+                color: #555;
+            }
+            
+            .event-warning {
+                position: absolute;
+                bottom: 1rem;
+                left: 1rem;
+                background-color: #ff6b6b;
+                color: white;
+                padding: 0.25rem 0.75rem;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 500;
+            }
+            
+            .price-warning {
+                font-size: 0.8rem;
+                color: #ff6b6b;
+                margin-top: 0.25rem;
+            }
+            
+            @media (max-width: 768px) {
+                .event-list-item {
+                    grid-template-columns: 1fr;
+                }
+                
+                .event-list-image {
+                    height: 150px;
+                }
+                
+                .event-list-content {
+                    padding: 1.5rem;
+                }
+                
+                .event-list-details {
+                    grid-template-columns: 1fr;
+                }
+                
+                .event-list-actions {
+                    flex-direction: column;
+                }
+                
+                .event-list-actions .btn {
+                    width: 100%;
+                }
+                
+                .filters-grid {
+                    grid-template-columns: 1fr;
+                }
+                
+                .events-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+                
+                .view-options {
+                    align-self: flex-end;
+                }
+            }
+        `;
+        
+        document.head.appendChild(eventsStyles);
+    </script>
+</body>
+</html>

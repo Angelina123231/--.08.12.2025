@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Театр - Бронирование билетов</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Навигация -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <i class="fas fa-theater-masks"></i>
+                <span>Театр Престиж</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="performances.html">Ближайшие спектакли</a></li>
+                <li class="user-menu">
+                    <a href="account.html" class="btn-outline">
+                        <i class="fas fa-user"></i> Аккаунт
+                    </a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Герой-секция -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Искусство в каждом моменте</h1>
+            <p>Забронируйте билеты на лучшие спектакли сезона</p>
+            <a href="#performances" class="btn-primary btn-large">
+                <i class="fas fa-ticket-alt"></i> Смотреть афишу
+            </a>
+        </div>
+        <div class="hero-overlay"></div>
+    </section>
+
+    <!-- Ближайшие спектакли -->
+    <section id="performances" class="section">
+        <div class="section-header">
+            <h2 class="section-title">Ближайшие спектакли</h2>
+            <p class="section-subtitle">Выберите постановку и забронируйте места онлайн</p>
+        </div>
+        <div class="performances-grid" id="performancesContainer">
+            <!-- Спектакли загружаются через JS -->
+        </div>
+    </section>
+
+    <!-- Галерея театра -->
+    <section id="gallery" class="section gallery-section">
+        <h2 class="section-title">Наша галерея</h2>
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="ac2ffa851962896a2d080f0c185d258f.jpg" alt="Зал театра">
+                <div class="gallery-overlay">
+                    <h3>Главный зал</h3>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="DSC_5058-_1_.jpeg" alt="Балет">
+                <div class="gallery-overlay">
+                    <h3>Балетная труппа</h3>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="2811.jpg" alt="Опера">
+                <div class="gallery-overlay">
+                    <h3>Оперная постановка</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- О нас -->
+    <section id="about" class="section about-section">
+        <div class="about-content">
+            <div class="about-text">
+                <h2 class="section-title">Театр Престиж</h2>
+                <p>Более 100 лет мы дарим зрителям незабываемые эмоции. Наша сцена видела лучших актеров страны, а каждый спектакль — это результат кропотливой работы профессиональной команды.</p>
+                <div class="features">
+                    <div class="feature">
+                        <i class="fas fa-crown"></i>
+                        <h3>Премиум-класс</h3>
+                        <p>Высокое качество постановок</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-chair"></i>
+                        <h3>Комфорт</h3>
+                        <p>Удобные места и сервис</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-parking"></i>
+                        <h3>Парковка</h3>
+                        <p>Бесплатная охраняемая парковка</p>
+                    </div>
+                </div>
+            </div>
+            <div class="about-image">
+                <img src="https://images.unsplash.com/photo-1517457373958-b7bdd4587205?ixlib=rb-4.0.3&auto=format&fit=crop&w-800&q=80" alt="Театр">
+            </div>
+        </div>
+    </section>
+
+    <!-- Модальные окна (остаются без изменений) -->
+    <!-- ... (модальные окна из предыдущего кода) ... -->
+
+    <!-- Контакты -->
+    <section id="contact" class="section contact-section">
+        <h2 class="section-title">Контакты</h2>
+        <div class="contact-content">
+            <div class="contact-info">
+                <div class="contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div>
+                        <h3>Адрес</h3>
+                        <p>г. Москва, Театральная площадь, 1</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <div>
+                        <h3>Телефон</h3>
+                        <p>+7 (495) 123-45-67</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <div>
+                        <h3>Email</h3>
+                        <p>info@theater-prestige.ru</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <h3>Часы работы</h3>
+                        <p>Ежедневно с 10:00 до 22:00</p>
+                        <p>Касса: с 11:00 до 20:00</p>
+                    </div>
+                </div>
+            </div>
+            <div class="contact-map">
+                <div class="map-placeholder">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <p>Карта расположения театра</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="logo">
+                    <i class="fas fa-theater-masks"></i>
+                    <span>Театр Престиж</span>
+                </div>
+                <p>Искусство, которое трогает сердце</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-vk"></i></a>
+                    <a href="#"><i class="fab fa-telegram"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Быстрые ссылки</h3>
+                <ul>
+                    <li><a href="#performances">Афиша</a></li>
+                    <li><a href="#about">О театре</a></li>
+                    <li><a href="#contact">Контакты</a></li>
+                    <li><a href="#">Правила посещения</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Подписка</h3>
+                <p>Получайте информацию о новых постановках</p>
+                <div class="subscribe">
+                    <input type="email" placeholder="Ваш email">
+                    <button class="btn-primary"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Театр Престиж. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script src="js/app.js">// Основной файл JavaScript
+document.addEventListener('DOMContentLoaded', initApp);
+
+function initApp() {
+    loadPerformances();
+    setupEventListeners();
+    checkAuth();
+}
+
+let performances = [
+    {
+        id: 1,
+        title: "Евгений Онегин",
+        description: "Классическая опера в современной постановке. Музыка Чайковского, великолепные голоса и драматическая история любви.",
+        date: "15 декабря",
+        time: "19:00",
+        duration: "3 часа",
+        price: 3500,
+        genre: "Опера",
+        image: "https://images.unsplash.com/photo-1574267432553-4b4628081c31?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+        badge: "Хит сезона"
+    },
+    {
+        id: 2,
+        title: "Лебединое озеро",
+        description: "Величайший балет Чайковского в исполнении примы-балерины Анны Ивановой. Магия танца и волшебная музыка.",
+        date: "18 декабря",
+        time: "20:00",
+        duration: "2.5 часа",
+        price: 4200,
+        genre: "Балет",
+        image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+        badge: "Премьера"
+    },
+    {
+        id: 3,
+        title: "Ревизор",
+        description: "Комедия Гоголя в современной интерпретации. Остроумный спектакль с блестящей актерской игрой.",
+        date: "20 декабря",
+        time: "18:30",
+        duration: "2 часа 20 мин",
+        price: 2800,
+        genre: "Комедия",
+        image: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+        badge: "Выбор зрителей"
+    },
+    {
+        id: 4,
+        title: "Щелкунчик",
+        description: "Сказочный балет к новогодним праздникам. Волшебная история, которая понравится и детям, и взрослым.",
+        date: "22 декабря",
+        time: "17:00",
+        duration: "2 часа",
+        price: 3200,
+        genre: "Балет",
+        image: "https://images.unsplash.com/photo-1567593810070-7a5c0925344e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+    },
+    {
+        id: 5,
+        title: "Гамлет",
+        description: "Шекспировская трагедия в постановке лауреата театральных премий. Глубокий психологический спектакль.",
+        date: "25 декабря",
+        time: "19:30",
+        duration: "3.5 часа",
+        price: 3800,
+        genre: "Драма",
+        image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+    },
+    {
+        id: 6,
+        title: "Кармен",
+        description: "Страстная опера Бизе. Огненная цыганка, роковая любовь и трагический финал под музыку гения.",
+        date: "28 декабря",
+        time: "20:00",
+        duration: "2 часа 45 мин",
+        price: 3600,
+        genre: "Опера",
+        image: "https://images.unsplash.com/photo-1589107342287-f5c4f8e72e8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+        badge: "Последние билеты"
+    }
+];
+
+function loadPerformances() {
+    const container = document.getElementById('performancesContainer');
+    container.innerHTML = '';
+    
+    performances.forEach(performance => {
+        const card = document.createElement('div');
+        card.className = 'performance-card';
+        card.innerHTML = `
+            <img src="${performance.image}" alt="${performance.title}" class="performance-img">
+            ${performance.badge ? `<div class="performance-badge">${performance.badge}</div>` : ''}
+            <div class="performance-info">
+                <h3>${performance.title}</h3>
+                <p class="performance-description">${performance.description}</p>
+                <div class="performance-meta">
+                    <div class="performance-date">
+                        <i class="far fa-calendar-alt"></i>
+                        <span>${performance.date} • ${performance.time}</span>
+                    </div>
+                    <div class="performance-price">${performance.price} ₽</div>
+                </div>
+                <button class="btn-primary btn-full" onclick="bookPerformance(${performance.id})">
+                    <i class="fas fa-ticket-alt"></i> Забронировать
+                </button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function setupEventListeners() {
+    // Навигация
+    const hamburger = document.querySelector('.hamburger');
+    const navMenu = document.querySelector('.nav-menu');
+    
+    if (hamburger) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+    }
+    
+    // Авторизация
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    
+    if (loginBtn) {
+        loginBtn.addEventListener('click', () => {
+            alert('Вход в систему (в разработке)');
+        });
+    }
+    
+    if (registerBtn) {
+        registerBtn.addEventListener('click', () => {
+            alert('Регистрация (в разработке)');
+        });
+    }
+    
+    // Плавная прокрутка
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+            
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+                
+                // Закрытие мобильного меню
+                if (navMenu.classList.contains('active')) {
+                    hamburger.classList.remove('active');
+                    navMenu.classList.remove('active');
+                }
+            }
+        });
+    });
+}
+
+function checkAuth() {
+    // Проверка авторизации (упрощенно)
+    const user = localStorage.getItem('theaterUser');
+    if (user) {
+        document.getElementById('loginBtn').innerHTML = '<i class="fas fa-user"></i> Личный кабинет';
+    }
+}
+
+function bookPerformance(id) {
+    const performance = performances.find(p => p.id === id);
+    if (!performance) return;
+    
+    // Проверка авторизации
+    const user = localStorage.getItem('theaterUser');
+    if (!user) {
+        if (confirm('Для бронирования необходимо войти в систему. Войти сейчас?')) {
+            alert('Переход на страницу входа (в разработке)');
+        }
+        return;
+    }
+    
+    // Упрощенное бронирование
+    const booking = {
+        performance: performance.title,
+        date: performance.date,
+        time: performance.time,
+        price: performance.price,
+        bookingDate: new Date().toLocaleString()
+    };
+    
+    // Сохранение в localStorage
+    let bookings = JSON.parse(localStorage.getItem('theaterBookings') || '[]');
+    bookings.push(booking);
+    localStorage.setItem('theaterBookings', JSON.stringify(bookings));
+    
+    // Показ подтверждения
+    showBookingConfirmation(performance);
+}
+
+function showBookingConfirmation(performance) {
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 500px; text-align: center;">
+            <span class="close-modal" onclick="this.parentElement.parentElement.remove()">&times;</span>
+            <div style="padding: 2rem;">
+                <i class="fas fa-check-circle" style="font-size: 4rem; color: #27ae60; margin-bottom: 1rem;"></i>
+                <h2 style="color: var(--primary); margin-bottom: 1rem;">Бронирование подтверждено!</h2>
+                <h3 style="color: var(--secondary); margin-bottom: 1rem;">${performance.title}</h3>
+                <p style="color: var(--gray); margin-bottom: 0.5rem;">
+                    <i class="far fa-calendar-alt"></i> ${performance.date} в ${performance.time}
+                </p>
+                <p style="color: var(--gray); margin-bottom: 2rem;">
+                    <i class="fas fa-ticket-alt"></i> ${performance.price} ₽
+                </p>
+                <p style="color: var(--gray); margin-bottom: 2rem;">
+                    Билеты будут отправлены на вашу электронную почту
+                </p>
+                <button class="btn-primary" onclick="this.parentElement.parentElement.parentElement.remove()">
+                    <i class="fas fa-check"></i> Понятно
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Автоматическое закрытие через 10 секунд
+    setTimeout(() => {
+        if (modal.parentElement) {
+            modal.remove();
+        }
+    }, 10000);
+}
+
+// Глобальные функции
+window.bookPerformance = bookPerformance;
+
+// Эффект параллакса для героя
+window.addEventListener('scroll', () => {
+    const scrolled = window.pageYOffset;
+    const hero = document.querySelector('.hero');
+    if (hero) {
+        hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+    }
+});</script>
+</body>
+</html>

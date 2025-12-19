@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аккаунт | Театр Престиж</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Дополнительные стили для страницы аккаунта */
+        .account-page {
+            margin-top: 80px;
+            padding: 2rem 0;
+            background: #f8f9fa;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Анимации */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Уведомления */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: white;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            z-index: 2000;
+            transform: translateX(120%);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            max-width: 400px;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left-color: #27ae60;
+        }
+
+        .notification.error {
+            border-left-color: #e74c3c;
+        }
+
+        .notification-icon {
+            font-size: 1.5rem;
+        }
+
+        .notification.success .notification-icon {
+            color: #27ae60;
+        }
+
+        .notification.error .notification-icon {
+            color: #e74c3c;
+        }
+
+        .notification-message {
+            flex: 1;
+        }
+
+        .notification-message strong {
+            display: block;
+            margin-bottom: 0.25rem;
+            color: var(--primary);
+        }
+
+        /* Формы входа/регистрации */
+        .auth-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 5%;
+        }
+
+        .auth-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        .auth-welcome {
+            background: linear-gradient(135deg, var(--primary) 0%, #2d2d4a 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .welcome-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-logo i {
+            font-size: 3rem;
+            color: var(--secondary);
+        }
+
+        .welcome-logo h2 {
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        .welcome-features {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .welcome-features li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .welcome-features i {
+            color: var(--secondary);
+        }
+
+        .auth-forms {
+            background: white;
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .forms-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray);
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .tab-btn:hover {
+            color: var(--primary);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--secondary);
+        }
+
+        .form-container {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .form-container.active {
+            display: block;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+
+        .form-group input.error {
+            border-color: #e74c3c;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 2.8rem;
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .remember-me input {
+            width: auto;
+        }
+
+        .forgot-password {
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .forgot-password:hover {
+            color: var(--primary);
+        }
+
+        .auth-button {
+            padding: 1rem;
+            background: var(--secondary);
+            color: var(--primary);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .auth-button:hover {
+            background: #e6c158;
+            transform: translateY(-2px);
+        }
+
+        .auth-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .form-divider {
+            text-align: center;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .form-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e9ecef;
+        }
+
+        .form-divider span {
+            background: white;
+            padding: 0 1rem;
+            color: var(--gray);
+            position: relative;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--gray);
+        }
+
+        .form-footer a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Профиль пользователя */
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 5%;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary) 0%, #2d2d4a 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1503387769-00a112127ca0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80') center/cover;
+            opacity: 0.1;
+        }
+
+        .profile-info {
+            position: relative;
+            z-index: 2;
+        }
+
+        .profile-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .profile-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .profile-header p i {
+            color: var(--secondary);
+            width: 20px;
+        }
+
+        .logout-btn {
+            margin-top: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--secondary);
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        .my-tickets {
+            background: white;
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 3rem;
+        }
+
+        .my-tickets h2 {
+            color: var(--primary);
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .tickets-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .ticket-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .ticket-card:hover {
+            border-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .ticket-title {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .ticket-status {
+            padding: 0.25rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .ticket-status.active {
+            background: rgba(39, 174, 96, 0.1);
+            color: #27ae60;
+        }
+
+        .ticket-status.cancelled {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .ticket-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .detail-item i {
+            color: var(--secondary);
+            width: 20px;
+        }
+
+        .detail-item span {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .detail-item strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .ticket-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .ticket-total {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .ticket-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .ticket-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cancel-btn {
+            background: #fff5f5;
+            color: #e74c3c;
+            border: 1px solid #f8d7da;
+        }
+
+        .cancel-btn:hover {
+            background: #ffe6e6;
+        }
+
+        .download-btn {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--secondary);
+        }
+
+        .download-btn:hover {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .no-tickets {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .no-tickets i {
+            font-size: 4rem;
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+
+        .no-tickets h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .no-tickets p {
+            color: var(--gray);
+            margin-bottom: 2rem;
+        }
+
+        .browse-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: var(--secondary);
+            color: var(--primary);
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .browse-btn:hover {
+            background: #e6c158;
+            transform: translateY(-2px);
+        }
+
+        /* Адаптивность */
+        @media (max-width: 992px) {
+            .auth-wrapper {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .auth-welcome,
+            .auth-forms,
+            .profile-header,
+            .my-tickets {
+                padding: 2rem;
+            }
+            
+            .profile-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .ticket-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .ticket-footer {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .ticket-actions {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <a href="index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 12px;">
+                    <i class="fas fa-theater-masks"></i>
+                    <span>Театр Престиж</span>
+                </a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="performances.html">Ближайшие спектакли</a></li>
+                <li><a href="index.html#about">О нас</a></li>
+                <li><a href="index.html#contact">Контакты</a></li>
+                <li class="user-menu">
+                    <a href="account.html" class="btn-outline">
+                        <i class="fas fa-user"></i> Аккаунт
+                    </a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Уведомление -->
+    <div id="notification" class="notification">
+        <div class="notification-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="notification-message">
+            <strong>Успешно!</strong>
+            <span id="notificationText">Действие выполнено успешно</span>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
+    <main class="account-page" id="accountContent">
+        <!-- Контент загружается динамически -->
+    </main>
+
+    <!-- Подвал -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="logo">
+                    <i class="fas fa-theater-masks"></i>
+                    <span>Театр Престиж</span>
+                </div>
+                <p>Искусство, которое трогает сердце</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-vk"></i></a>
+                    <a href="#"><i class="fab fa-telegram"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Быстрые ссылки</h3>
+                <ul>
+                    <li><a href="performances.html">Афиша</a></li>
+                    <li><a href="index.html#about">О театре</a></li>
+                    <li><a href="index.html#contact">Контакты</a></li>
+                    <li><a href="account.html">Личный кабинет</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Контакты</h3>
+                <p><i class="fas fa-map-marker-alt"></i> г. Москва, Театральная площадь, 1</p>
+                <p><i class="fas fa-phone"></i> +7 (495) 123-45-67</p>
+                <p><i class="fas fa-envelope"></i> info@theater-prestige.ru</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Театр Престиж. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Система управления пользователями
+        class AccountSystem {
+            constructor() {
+                this.currentUser = null;
+                this.users = JSON.parse(localStorage.getItem('theaterUsers')) || [];
+                this.bookings = JSON.parse(localStorage.getItem('theaterBookings')) || [];
+                this.initializeDefaultUsers();
+            }
+
+            initializeDefaultUsers() {
+                if (this.users.length === 0) {
+                    this.users = [
+                        {
+                            id: 1,
+                            name: "Александр Петров",
+                            email: "user@example.com",
+                            phone: "+7 (999) 123-45-67",
+                            password: "password123",
+                            role: "user",
+                            createdAt: new Date().toISOString()
+                        }
+                    ];
+                    localStorage.setItem('theaterUsers', JSON.stringify(this.users));
+                }
+            }
+
+            getCurrentUser() {
+                const savedUser = localStorage.getItem('currentUser');
+                if (savedUser) {
+                    this.currentUser = JSON.parse(savedUser);
+                    return this.currentUser;
+                }
+                return null;
+            }
+
+            login(email, password) {
+                const user = this.users.find(u => u.email === email && u.password === password);
+                if (user) {
+                    const userData = {
+                        id: user.id,
+                        name: user.name,
+                        email: user.email,
+                        phone: user.phone,
+                        role: user.role
+                    };
+                    localStorage.setItem('currentUser', JSON.stringify(userData));
+                    this.currentUser = userData;
+                    return { success: true, user: userData };
+                }
+                return { success: false, message: "Неверный email или пароль" };
+            }
+
+            register(userData) {
+                if (this.users.some(u => u.email === userData.email)) {
+                    return { success: false, message: "Пользователь с таким email уже существует" };
+                }
+
+                const newUser = {
+                    id: Date.now(),
+                    name: userData.name,
+                    email: userData.email,
+                    phone: userData.phone,
+                    password: userData.password,
+                    role: "user",
+                    createdAt: new Date().toISOString()
+                };
+
+                this.users.push(newUser);
+                localStorage.setItem('theaterUsers', JSON.stringify(this.users));
+
+                const userSessionData = {
+                    id: newUser.id,
+                    name: newUser.name,
+                    email: newUser.email,
+                    phone: newUser.phone,
+                    role: newUser.role
+                };
+
+                localStorage.setItem('currentUser', JSON.stringify(userSessionData));
+                this.currentUser = userSessionData;
+
+                return { success: true, user: userSessionData };
+            }
+
+            logout() {
+                localStorage.removeItem('currentUser');
+                this.currentUser = null;
+                return true;
+            }
+
+            getUserBookings(userId) {
+                return this.bookings.filter(b => b.userId === userId && b.status !== 'cancelled');
+            }
+
+            cancelBooking(bookingId) {
+                const booking = this.bookings.find(b => b.id === bookingId);
+                if (booking) {
+                    booking.status = 'cancelled';
+                    localStorage.setItem('theaterBookings', JSON.stringify(this.bookings));
+                    return true;
+                }
+                return false;
+            }
+
+            showNotification(message, type = 'success') {
+                const notification = document.getElementById('notification');
+                const icon = notification.querySelector('.notification-icon i');
+                const text = document.getElementById('notificationText');
+
+                notification.className = `notification ${type}`;
+                icon.className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+                text.textContent = message;
+
+                notification.classList.add('show');
+
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        // Инициализация системы
+        const accountSystem = new AccountSystem();
+
+        // DOM элементы
+        const accountContent = document.getElementById('accountContent');
+
+        // Рендеринг страницы
+        function renderPage() {
+            const user = accountSystem.getCurrentUser();
+            
+            if (user) {
+                renderProfile(user);
+            } else {
+                renderAuthPage();
+            }
+        }
+
+        // Рендеринг страницы авторизации
+        function renderAuthPage() {
+            const authHTML = `
+                <div class="auth-container">
+                    <div class="auth-wrapper">
+                        <div class="auth-welcome">
+                            <div class="welcome-logo">
+                                <i class="fas fa-theater-masks"></i>
+                                <h2>Театр Престиж</h2>
+                            </div>
+                            <p>Войдите в систему, чтобы получить доступ к вашим бронированиям и персонализированным рекомендациям.</p>
+                            <ul class="welcome-features">
+                                <li><i class="fas fa-check"></i> Управление бронированиями</li>
+                                <li><i class="fas fa-check"></i> История посещений</li>
+                                <li><i class="fas fa-check"></i> Специальные предложения</li>
+                                <li><i class="fas fa-check"></i> Быстрое бронирование</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="auth-forms">
+                            <div class="forms-tabs">
+                                <button class="tab-btn active" data-tab="login">Вход</button>
+                                <button class="tab-btn" data-tab="register">Регистрация</button>
+                            </div>
+                            
+                            <div id="loginForm" class="form-container active">
+                                <form class="auth-form" id="loginFormElement">
+                                    <div class="form-group">
+                                        <label for="loginEmail">Email</label>
+                                        <input type="email" id="loginEmail" placeholder="ваш@email.com" required>
+                                        <div class="error-message" id="loginEmailError"></div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="loginPassword">Пароль</label>
+                                        <input type="password" id="loginPassword" placeholder="Введите пароль" required>
+                                        <button type="button" class="password-toggle" data-target="loginPassword">
+                                            <i class="far fa-eye"></i>
+                                        </button>
+                                        <div class="error-message" id="loginPasswordError"></div>
+                                    </div>
+                                    
+                                    <div class="form-options">
+                                        <label class="remember-me">
+                                            <input type="checkbox" id="rememberMe">
+                                            Запомнить меня
+                                        </label>
+                                        <a href="#" class="forgot-password">Забыли пароль?</a>
+                                    </div>
+                                    
+                                    <button type="submit" class="auth-button">
+                                        <i class="fas fa-sign-in-alt"></i> Войти
+                                    </button>
+                                </form>
+                                
+                                <div class="form-footer">
+                                    Нет аккаунта? <a href="#" class="switch-to-register">Зарегистрируйтесь</a>
+                                </div>
+                            </div>
+                            
+                            <div id="registerForm" class="form-container">
+                                <form class="auth-form" id="registerFormElement">
+                                    <div class="form-group">
+                                        <label for="registerName">Имя и фамилия</label>
+                                        <input type="text" id="registerName" placeholder="Иван Иванов" required>
+                                        <div class="error-message" id="registerNameError"></div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="registerEmail">Email</label>
+                                        <input type="email" id="registerEmail" placeholder="ваш@email.com" required>
+                                        <div class="error-message" id="registerEmailError"></div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="registerPhone">Телефон</label>
+                                        <input type="tel" id="registerPhone" placeholder="+7 (999) 999-99-99" required>
+                                        <div class="error-message" id="registerPhoneError"></div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="registerPassword">Пароль</label>
+                                        <input type="password" id="registerPassword" placeholder="Минимум 8 символов" required>
+                                        <button type="button" class="password-toggle" data-target="registerPassword">
+                                            <i class="far fa-eye"></i>
+                                        </button>
+                                        <div class="error-message" id="registerPasswordError"></div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="registerConfirmPassword">Подтвердите пароль</label>
+                                        <input type="password" id="registerConfirmPassword" placeholder="Повторите пароль" required>
+                                        <button type="button" class="password-toggle" data-target="registerConfirmPassword">
+                                            <i class="far fa-eye"></i>
+                                        </button>
+                                        <div class="error-message" id="registerConfirmPasswordError"></div>
+                                    </div>
+                                    
+                                    <button type="submit" class="auth-button">
+                                        <i class="fas fa-user-plus"></i> Зарегистрироваться
+                                    </button>
+                                </form>
+                                
+                                <div class="form-footer">
+                                    Уже есть аккаунт? <a href="#" class="switch-to-login">Войдите</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            accountContent.innerHTML = authHTML;
+            setupAuthHandlers();
+        }
+
+        // Рендеринг профиля
+        function renderProfile(user) {
+            const bookings = accountSystem.getUserBookings(user.id);
+            
+            let ticketsHTML = '';
+            if (bookings.length > 0) {
+                bookings.forEach(booking => {
+                    ticketsHTML += `
+                        <div class="ticket-card">
+                            <div class="ticket-header">
+                                <h3 class="ticket-title">${booking.performanceTitle || booking.performance}</h3>
+                                <span class="ticket-status active">Активен</span>
+                            </div>
+                            <div class="ticket-details">
+                                <div class="detail-item">
+                                    <i class="far fa-calendar-alt"></i>
+                                    <div>
+                                        <span>Дата:</span>
+                                        <strong>${booking.date}</strong>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="far fa-clock"></i>
+                                    <div>
+                                        <span>Время:</span>
+                                        <strong>${booking.time}</strong>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-chair"></i>
+                                    <div>
+                                        <span>Места:</span>
+                                        <strong>${booking.seats ? booking.seats.join(', ') : 'Не указано'}</strong>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <div>
+                                        <span>Зал:</span>
+                                        <strong>Основной зал</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ticket-footer">
+                                <div class="ticket-total">${booking.totalPrice || 0} ₽</div>
+                                <div class="ticket-actions">
+                                    <button class="ticket-btn cancel-btn" data-id="${booking.id}">
+                                        <i class="fas fa-times"></i> Отменить
+                                    </button>
+                                    <button class="ticket-btn download-btn">
+                                        <i class="fas fa-download"></i> Билет
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                ticketsHTML = `
+                    <div class="no-tickets">
+                        <i class="fas fa-ticket-alt"></i>
+                        <h3>У вас пока нет билетов</h3>
+                        <p>Посетите нашу афишу, чтобы выбрать интересующий вас спектакль</p>
+                        <a href="performances.html" class="browse-btn">
+                            <i class="fas fa-calendar-alt"></i> Смотреть афишу
+                        </a>
+                    </div>
+                `;
+            }
+
+            const profileHTML = `
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <div class="profile-info">
+                            <h1>${user.name}</h1>
+                            <p><i class="fas fa-envelope"></i> ${user.email}</p>
+                            <p><i class="fas fa-phone"></i> ${user.phone}</p>
+                            <button id="logoutButton" class="auth-button logout-btn">
+                                <i class="fas fa-sign-out-alt"></i> Выйти
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-stats">
+                        <div class="stat-card">
+                            <div class="stat-number">${bookings.length}</div>
+                            <div class="stat-label">Бронирований</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${bookings.length * 3500 || 0}</div>
+                            <div class="stat-label">Потрачено всего</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">5</div>
+                            <div class="stat-label">Посещений театра</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">Gold</div>
+                            <div class="stat-label">Статус клиента</div>
+                        </div>
+                    </div>
+                    
+                    <div class="my-tickets">
+                        <h2>Мои билеты</h2>
+                        <div class="tickets-list">
+                            ${ticketsHTML}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            accountContent.innerHTML = profileHTML;
+            setupProfileHandlers();
+        }
+
+        // Настройка обработчиков для авторизации
+        function setupAuthHandlers() {
+            // Переключение табов
+            document.querySelectorAll('.tab-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    document.querySelectorAll('.form-container').forEach(form => {
+                        form.classList.remove('active');
+                        if (form.id === tabId + 'Form') {
+                            form.classList.add('active');
+                        }
+                    });
+                });
+            });
+
+            // Переключение между формами
+            document.querySelectorAll('.switch-to-register').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelector('[data-tab="register"]').click();
+                });
+            });
+
+            document.querySelectorAll('.switch-to-login').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelector('[data-tab="login"]').click();
+                });
+            });
+
+            // Переключение видимости пароля
+            document.querySelectorAll('.password-toggle').forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target');
+                    const input = document.getElementById(targetId);
+                    const icon = this.querySelector('i');
+                    
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
+                });
+            });
+
+            // Форма входа
+            const loginForm = document.getElementById('loginFormElement');
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleLogin);
+            }
+
+            // Форма регистрации
+            const registerForm = document.getElementById('registerFormElement');
+            if (registerForm) {
+                registerForm.addEventListener('submit', handleRegister);
+            }
+
+            // Мобильное меню
+            const hamburger = document.querySelector('.hamburger');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            if (hamburger) {
+                hamburger.addEventListener('click', () => {
+                    hamburger.classList.toggle('active');
+                    navMenu.classList.toggle('active');
+                });
+            }
+        }
+
+        // Настройка обработчиков для профиля
+        function setupProfileHandlers() {
+            // Выход из системы
+            const logoutButton = document.getElementById('logoutButton');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', function() {
+                    if (confirm('Вы уверены, что хотите выйти из аккаунта?')) {
+                        accountSystem.logout();
+                        accountSystem.showNotification('Вы успешно вышли из аккаунта');
+                        setTimeout(() => {
+                            renderPage();
+                        }, 1000);
+                    }
+                });
+            }
+
+            // Отмена бронирования
+            document.querySelectorAll('.cancel-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const bookingId = this.getAttribute('data-id');
+                    if (confirm('Вы уверены, что хотите отменить это бронирование?')) {
+                        if (accountSystem.cancelBooking(parseInt(bookingId))) {
+                            accountSystem.showNotification('Бронирование отменено');
+                            setTimeout(() => {
+                                const user = accountSystem.getCurrentUser();
+                                if (user) renderProfile(user);
+                            }, 1000);
+                        }
+                    }
+                });
+            });
+
+            // Загрузка билета
+            document.querySelectorAll('.download-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    accountSystem.showNotification('Билет отправлен на вашу электронную почту');
+                });
+            });
+        }
+
+        // Обработка входа
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const button = e.target.querySelector('button[type="submit"]');
+            
+            // Валидация
+            if (!email || !password) {
+                accountSystem.showNotification('Пожалуйста, заполните все поля', 'error');
+                return;
+            }
+
+            // Блокировка кнопки
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Вход...';
+            button.disabled = true;
+
+            try {
+                const result = accountSystem.login(email, password);
+                
+                if (result.success) {
+                    accountSystem.showNotification(`Добро пожаловать, ${result.user.name}!`);
+                    
+                    setTimeout(() => {
+                        renderPage();
+                        // Обновляем кнопку в шапке
+                        updateHeaderUser(result.user);
+                    }, 1000);
+                } else {
+                    accountSystem.showNotification(result.message, 'error');
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }
+            } catch (error) {
+                accountSystem.showNotification('Произошла ошибка при входе', 'error');
+                console.error('Login error:', error);
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        }
+
+        // Обработка регистрации
+        async function handleRegister(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('registerName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const phone = document.getElementById('registerPhone').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+            const button = e.target.querySelector('button[type="submit"]');
+            
+            // Валидация
+            if (!name || !email || !phone || !password || !confirmPassword) {
+                accountSystem.showNotification('Пожалуйста, заполните все поля', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                accountSystem.showNotification('Пароли не совпадают', 'error');
+                return;
+            }
+
+            if (password.length < 8) {
+                accountSystem.showNotification('Пароль должен содержать минимум 8 символов', 'error');
+                return;
+            }
+
+            // Блокировка кнопки
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Регистрация...';
+            button.disabled = true;
+
+            try {
+                const userData = {
+                    name,
+                    email,
+                    phone,
+                    password
+                };
+
+                const result = accountSystem.register(userData);
+                
+                if (result.success) {
+                    accountSystem.showNotification('Регистрация успешна!');
+                    
+                    setTimeout(() => {
+                        renderPage();
+                        // Обновляем кнопку в шапке
+                        updateHeaderUser(result.user);
+                    }, 1000);
+                } else {
+                    accountSystem.showNotification(result.message, 'error');
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }
+            } catch (error) {
+                accountSystem.showNotification('Произошла ошибка при регистрации', 'error');
+                console.error('Registration error:', error);
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        }
+
+        // Обновление шапки для авторизованного пользователя
+        function updateHeaderUser(user) {
+            const userMenu = document.querySelector('.user-menu');
+            if (userMenu && user) {
+                userMenu.innerHTML = `
+                    <a href="account.html" class="btn-outline">
+                        <i class="fas fa-user"></i> ${user.name.split(' ')[0]}
+                    </a>
+                `;
+            }
+        }
+
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPage();
+            
+            // Проверяем авторизацию и обновляем шапку
+            const user = accountSystem.getCurrentUser();
+            if (user) {
+                updateHeaderUser(user);
+            }
+        });
+
+        // Слушатель изменений в localStorage
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'currentUser' || e.key === 'theaterBookings') {
+                renderPage();
+            }
+        });
+    </script>
+</body>
+</html>

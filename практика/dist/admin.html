@@ -1,0 +1,2271 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Административная панель - TicketBook</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Стили для админ-панели */
+        .admin-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+            min-height: calc(100vh - 200px);
+            margin-top: 2rem;
+        }
+        
+        .admin-sidebar {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+        
+        .admin-user-info {
+            text-align: center;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 1.5rem;
+        }
+        
+        .admin-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4a6bdf 0%, #6c8eff 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .admin-role {
+            display: inline-block;
+            background: #4a6bdf;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+        
+        .admin-menu {
+            list-style: none;
+        }
+        
+        .admin-menu li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #555;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-menu a:hover,
+        .admin-menu a.active {
+            background-color: #4a6bdf;
+            color: white;
+        }
+        
+        .admin-menu a i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .admin-content {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .admin-title {
+            font-size: 1.8rem;
+            color: #333;
+            margin: 0;
+        }
+        
+        .admin-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        /* Статистика */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #4a6bdf 0%, #6c8eff 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card.secondary {
+            background: linear-gradient(135deg, #6c8eff 0%, #8ca8ff 100%);
+        }
+        
+        .stat-card.success {
+            background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+        }
+        
+        .stat-card.warning {
+            background: linear-gradient(135deg, #FF9800 0%, #FFB74D 100%);
+        }
+        
+        .stat-card.danger {
+            background: linear-gradient(135deg, #f44336 0%, #EF5350 100%);
+        }
+        
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        
+        /* Таблицы */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1.5rem;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .data-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+            white-space: nowrap;
+        }
+        
+        .data-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-confirmed {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        /* Формы в админке */
+        .admin-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .form-full-width {
+            grid-column: 1 / -1;
+        }
+        
+        /* Графики */
+        .chart-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .chart-title {
+            margin-bottom: 1rem;
+            color: #333;
+            font-size: 1.2rem;
+        }
+        
+        .chart-placeholder {
+            height: 300px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        /* Фильтры в таблицах */
+        .table-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .filter-select {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+        }
+        
+        /* Модальные окна */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            margin: 0;
+            color: #333;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #666;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 1024px) {
+            .admin-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-sidebar {
+                order: 2;
+            }
+            
+            .admin-content {
+                order: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .admin-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .admin-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="header">
+        <nav class="nav container">
+            <div class="logo">
+                <a href="index.html" class="logo-link">
+                    <i class="fas fa-ticket-alt"></i>
+                    TicketBook
+                </a>
+            </div>
+            
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-home"></i> Главная
+                </a>
+                <a href="events.html" class="nav-link">
+                    <i class="fas fa-calendar-alt"></i> Афиша
+                </a>
+                <a href="auth.html" class="nav-link">
+                    <i class="fas fa-user"></i> Войти
+                </a>
+                <a href="profile.html" class="nav-link">
+                    <i class="fas fa-user-circle"></i> Профиль
+                </a>
+                <a href="admin.html" class="nav-link active admin-link">
+                    <i class="fas fa-cog"></i> Админка
+                </a>
+            </div>
+            
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Административная панель -->
+    <section class="section">
+        <div class="container">
+            <!-- Проверка прав доступа -->
+            <div id="accessDenied" class="access-denied" style="display: none;">
+                <div class="access-denied-content">
+                    <i class="fas fa-lock fa-3x"></i>
+                    <h2>Доступ запрещен</h2>
+                    <p>У вас недостаточно прав для доступа к административной панели</p>
+                    <a href="index.html" class="btn btn-primary">
+                        <i class="fas fa-home"></i> На главную
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Основной контент админки -->
+            <div id="adminContent" style="display: none;">
+                <div class="admin-container">
+                    <!-- Боковое меню -->
+                    <aside class="admin-sidebar">
+                        <div class="admin-user-info">
+                            <div class="admin-avatar">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <h3 id="adminUserName">Администратор</h3>
+                            <div class="admin-role" id="adminUserRole">Админ</div>
+                        </div>
+                        
+                        <ul class="admin-menu">
+                            <li>
+                                <a href="#" class="active" onclick="showSection('dashboard')">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                    <span>Панель управления</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="showSection('events')">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>Мероприятия</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="showSection('users')">
+                                    <i class="fas fa-users"></i>
+                                    <span>Пользователи</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="showSection('bookings')">
+                                    <i class="fas fa-ticket-alt"></i>
+                                    <span>Бронирования</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="showSection('reports')">
+                                    <i class="fas fa-chart-bar"></i>
+                                    <span>Отчеты</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="showSection('settings')">
+                                    <i class="fas fa-cog"></i>
+                                    <span>Настройки</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="logoutAdmin()">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Выйти</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </aside>
+                    
+                    <!-- Основной контент -->
+                    <main class="admin-content">
+                        <!-- Дашборд -->
+                        <div id="dashboardSection" class="admin-section">
+                            <div class="admin-header">
+                                <h1 class="admin-title">Панель управления</h1>
+                                <div class="admin-actions">
+                                    <button class="btn btn-primary" onclick="refreshStats()">
+                                        <i class="fas fa-sync-alt"></i> Обновить
+                                    </button>
+                                    <button class="btn btn-outline" onclick="exportData()">
+                                        <i class="fas fa-download"></i> Экспорт
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Статистика -->
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="stat-number" id="totalUsers">0</div>
+                                    <div class="stat-label">Всего пользователей</div>
+                                </div>
+                                
+                                <div class="stat-card secondary">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </div>
+                                    <div class="stat-number" id="totalEvents">0</div>
+                                    <div class="stat-label">Мероприятий</div>
+                                </div>
+                                
+                                <div class="stat-card success">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-ticket-alt"></i>
+                                    </div>
+                                    <div class="stat-number" id="totalBookings">0</div>
+                                    <div class="stat-label">Бронирований</div>
+                                </div>
+                                
+                                <div class="stat-card warning">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-ruble-sign"></i>
+                                    </div>
+                                    <div class="stat-number" id="totalRevenue">0 ₽</div>
+                                    <div class="stat-label">Общая выручка</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Быстрые действия -->
+                            <div class="quick-actions">
+                                <h3>Быстрые действия</h3>
+                                <div class="actions-grid">
+                                    <button class="action-btn" onclick="showAddEventModal()">
+                                        <i class="fas fa-plus-circle"></i>
+                                        <span>Добавить мероприятие</span>
+                                    </button>
+                                    <button class="action-btn" onclick="showSection('users')">
+                                        <i class="fas fa-user-plus"></i>
+                                        <span>Добавить пользователя</span>
+                                    </button>
+                                    <button class="action-btn" onclick="showReportsModal()">
+                                        <i class="fas fa-chart-pie"></i>
+                                        <span>Сгенерировать отчет</span>
+                                    </button>
+                                    <button class="action-btn" onclick="showSettingsModal()">
+                                        <i class="fas fa-bell"></i>
+                                        <span>Уведомления</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Последние действия -->
+                            <div class="recent-activity">
+                                <h3>Последние действия</h3>
+                                <div class="activity-list" id="recentActivity">
+                                    <!-- Активность будет загружена через JS -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Управление мероприятиями -->
+                        <div id="eventsSection" class="admin-section" style="display: none;">
+                            <div class="admin-header">
+                                <h1 class="admin-title">Управление мероприятиями</h1>
+                                <div class="admin-actions">
+                                    <button class="btn btn-primary" onclick="showAddEventModal()">
+                                        <i class="fas fa-plus"></i> Добавить мероприятие
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Фильтры -->
+                            <div class="table-filters">
+                                <div class="filter-group">
+                                    <label>Категория:</label>
+                                    <select id="eventsCategoryFilter" class="filter-select" onchange="filterEventsTable()">
+                                        <option value="all">Все</option>
+                                        <option value="Концерт">Концерты</option>
+                                        <option value="Театр">Театр</option>
+                                        <option value="Выставка">Выставки</option>
+                                        <option value="Кино">Кино</option>
+                                        <option value="Фестиваль">Фестивали</option>
+                                        <option value="Спорт">Спорт</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="filter-group">
+                                    <label>Статус:</label>
+                                    <select id="eventsStatusFilter" class="filter-select" onchange="filterEventsTable()">
+                                        <option value="all">Все</option>
+                                        <option value="active">Активные</option>
+                                        <option value="upcoming">Предстоящие</option>
+                                        <option value="past">Прошедшие</option>
+                                        <option value="soldout">Распроданы</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="filter-group">
+                                    <input type="text" 
+                                           id="eventsSearch" 
+                                           class="form-input" 
+                                           placeholder="Поиск мероприятий..."
+                                           oninput="filterEventsTable()">
+                                </div>
+                            </div>
+                            
+                            <!-- Таблица мероприятий -->
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Название</th>
+                                            <th>Категория</th>
+                                            <th>Дата</th>
+                                            <th>Цена</th>
+                                            <th>Билеты</th>
+                                            <th>Статус</th>
+                                            <th>Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="eventsTableBody">
+                                        <!-- Данные будут загружены через JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="table-footer">
+                                <div class="table-info">
+                                    Показано: <span id="eventsCount">0</span> мероприятий
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Управление пользователями -->
+                        <div id="usersSection" class="admin-section" style="display: none;">
+                            <div class="admin-header">
+                                <h1 class="admin-title">Управление пользователями</h1>
+                                <div class="admin-actions">
+                                    <button class="btn btn-primary" onclick="showAddUserModal()">
+                                        <i class="fas fa-user-plus"></i> Добавить пользователя
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Фильтры -->
+                            <div class="table-filters">
+                                <div class="filter-group">
+                                    <label>Роль:</label>
+                                    <select id="usersRoleFilter" class="filter-select" onchange="filterUsersTable()">
+                                        <option value="all">Все</option>
+                                        <option value="admin">Администраторы</option>
+                                        <option value="manager">Менеджеры</option>
+                                        <option value="user">Пользователи</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="filter-group">
+                                    <label>Статус:</label>
+                                    <select id="usersStatusFilter" class="filter-select" onchange="filterUsersTable()">
+                                        <option value="all">Все</option>
+                                        <option value="active">Активные</option>
+                                        <option value="inactive">Неактивные</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="filter-group">
+                                    <input type="text" 
+                                           id="usersSearch" 
+                                           class="form-input" 
+                                           placeholder="Поиск пользователей..."
+                                           oninput="filterUsersTable()">
+                                </div>
+                            </div>
+                            
+                            <!-- Таблица пользователей -->
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Имя</th>
+                                            <th>Email</th>
+                                            <th>Роль</th>
+                                            <th>Телефон</th>
+                                            <th>Регистрация</th>
+                                            <th>Статус</th>
+                                            <th>Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="usersTableBody">
+                                        <!-- Данные будут загружены через JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Управление бронированиями -->
+                        <div id="bookingsSection" class="admin-section" style="display: none;">
+                            <div class="admin-header">
+                                <h1 class="admin-title">Управление бронированиями</h1>
+                                <div class="admin-actions">
+                                    <button class="btn btn-outline" onclick="exportBookings()">
+                                        <i class="fas fa-file-export"></i> Экспорт в CSV
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Фильтры -->
+                            <div class="table-filters">
+                                <div class="filter-group">
+                                    <label>Статус:</label>
+                                    <select id="bookingsStatusFilter" class="filter-select" onchange="filterBookingsTable()">
+                                        <option value="all">Все</option>
+                                        <option value="confirmed">Подтвержденные</option>
+                                        <option value="pending">Ожидающие</option>
+                                        <option value="cancelled">Отмененные</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="filter-group">
+                                    <label>Дата от:</label>
+                                    <input type="date" 
+                                           id="bookingsDateFrom" 
+                                           class="form-input"
+                                           onchange="filterBookingsTable()">
+                                </div>
+                                
+                                <div class="filter-group">
+                                    <label>Дата до:</label>
+                                    <input type="date" 
+                                           id="bookingsDateTo" 
+                                           class="form-input"
+                                           onchange="filterBookingsTable()">
+                                </div>
+                            </div>
+                            
+                            <!-- Таблица бронирований -->
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Пользователь</th>
+                                            <th>Мероприятие</th>
+                                            <th>Дата брони</th>
+                                            <th>Билетов</th>
+                                            <th>Сумма</th>
+                                            <th>Статус</th>
+                                            <th>Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bookingsTableBody">
+                                        <!-- Данные будут загружены через JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Отчеты -->
+                        <div id="reportsSection" class="admin-section" style="display: none;">
+                            <div class="admin-header">
+                                <h1 class="admin-title">Отчеты и аналитика</h1>
+                                <div class="admin-actions">
+                                    <button class="btn btn-primary" onclick="generateReport()">
+                                        <i class="fas fa-chart-line"></i> Сгенерировать отчет
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Графики -->
+                            <div class="charts-grid">
+                                <div class="chart-container">
+                                    <h3 class="chart-title">Бронирования по месяцам</h3>
+                                    <div class="chart-placeholder" id="bookingsChart">
+                                        <i class="fas fa-chart-bar"></i> График будет загружен
+                                    </div>
+                                </div>
+                                
+                                <div class="chart-container">
+                                    <h3 class="chart-title">Выручка по категориям</h3>
+                                    <div class="chart-placeholder" id="revenueChart">
+                                        <i class="fas fa-chart-pie"></i> График будет загружен
+                                    </div>
+                                </div>
+                                
+                                <div class="chart-container">
+                                    <h3 class="chart-title">Активность пользователей</h3>
+                                    <div class="chart-placeholder" id="activityChart">
+                                        <i class="fas fa-chart-line"></i> График будет загружен
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Статистика отчетов -->
+                            <div class="reports-stats">
+                                <h3>Ключевые показатели</h3>
+                                <div class="stats-cards">
+                                    <div class="stat-card">
+                                        <div class="stat-number" id="avgTicketPrice">0 ₽</div>
+                                        <div class="stat-label">Средняя цена билета</div>
+                                    </div>
+                                    
+                                    <div class="stat-card secondary">
+                                        <div class="stat-number" id="conversionRate">0%</div>
+                                        <div class="stat-label">Конверсия</div>
+                                    </div>
+                                    
+                                    <div class="stat-card success">
+                                        <div class="stat-number" id="revenueGrowth">0%</div>
+                                        <div class="stat-label">Рост выручки</div>
+                                    </div>
+                                    
+                                    <div class="stat-card warning">
+                                        <div class="stat-number" id="avgTicketsPerBooking">0</div>
+                                        <div class="stat-label">Билетов на бронь</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Настройки -->
+                        <div id="settingsSection" class="admin-section" style="display: none;">
+                            <div class="admin-header">
+                                <h1 class="admin-title">Настройки системы</h1>
+                            </div>
+                            
+                            <div class="settings-tabs">
+                                <div class="settings-nav">
+                                    <button class="settings-tab active" onclick="showSettingsTab('general')">
+                                        Основные
+                                    </button>
+                                    <button class="settings-tab" onclick="showSettingsTab('notifications')">
+                                        Уведомления
+                                    </button>
+                                    <button class="settings-tab" onclick="showSettingsTab('payments')">
+                                        Оплата
+                                    </button>
+                                    <button class="settings-tab" onclick="showSettingsTab('security')">
+                                        Безопасность
+                                    </button>
+                                </div>
+                                
+                                <div class="settings-content">
+                                    <!-- Основные настройки -->
+                                    <div id="generalSettings" class="settings-tab-content active">
+                                        <form id="generalSettingsForm">
+                                            <div class="form-group">
+                                                <label class="form-label">Название системы</label>
+                                                <input type="text" 
+                                                       class="form-input" 
+                                                       value="TicketBook"
+                                                       required>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label class="form-label">Email поддержки</label>
+                                                <input type="email" 
+                                                       class="form-input" 
+                                                       value="support@ticketbook.ru"
+                                                       required>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label class="form-label">Валюта</label>
+                                                <select class="form-select">
+                                                    <option value="RUB" selected>Рубли (RUB)</option>
+                                                    <option value="USD">Доллары (USD)</option>
+                                                    <option value="EUR">Евро (EUR)</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label class="form-label">Часовой пояс</label>
+                                                <select class="form-select">
+                                                    <option value="Europe/Moscow" selected>Москва (GMT+3)</option>
+                                                    <option value="Europe/London">Лондон (GMT+0)</option>
+                                                    <option value="America/New_York">Нью-Йорк (GMT-5)</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <button type="submit" class="btn btn-primary">
+                                                Сохранить изменения
+                                            </button>
+                                        </form>
+                                    </div>
+                                    
+                                    <!-- Другие вкладки будут реализованы аналогично -->
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Модальные окна -->
+    
+    <!-- Добавление мероприятия -->
+    <div id="addEventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Добавить мероприятие</h3>
+                <button class="modal-close" onclick="closeModal('addEventModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addEventForm" onsubmit="handleAddEvent(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Название</label>
+                            <input type="text" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Категория</label>
+                            <select class="form-select" required>
+                                <option value="">Выберите категорию</option>
+                                <option value="Концерт">Концерт</option>
+                                <option value="Театр">Театр</option>
+                                <option value="Выставка">Выставка</option>
+                                <option value="Кино">Кино</option>
+                                <option value="Фестиваль">Фестиваль</option>
+                                <option value="Спорт">Спорт</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Описание</label>
+                        <textarea class="form-input" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Дата и время</label>
+                            <input type="datetime-local" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Место проведения</label>
+                            <input type="text" class="form-input" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Цена билета (₽)</label>
+                            <input type="number" class="form-input" min="0" step="100" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Количество билетов</label>
+                            <input type="number" class="form-input" min="1" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">URL изображения</label>
+                        <input type="url" class="form-input" placeholder="https://example.com/image.jpg">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('addEventModal')">Отмена</button>
+                <button type="submit" form="addEventForm" class="btn btn-primary">Добавить</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Добавление пользователя -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Добавить пользователя</h3>
+                <button class="modal-close" onclick="closeModal('addUserModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addUserForm" onsubmit="handleAddUser(event)">
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Имя</label>
+                        <input type="text" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Роль</label>
+                        <select class="form-select" required>
+                            <option value="user">Пользователь</option>
+                            <option value="manager">Менеджер</option>
+                            <option value="admin">Администратор</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Пароль</label>
+                        <input type="password" class="form-input" required minlength="6">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('addUserModal')">Отмена</button>
+                <button type="submit" form="addUserForm" class="btn btn-primary">Добавить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подвал -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>TicketBook</h3>
+                    <p>Система онлайн-бронирования билетов на мероприятия</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Контакты</h3>
+                    <p><i class="fas fa-envelope"></i> admin@ticketbook.ru</p>
+                    <p><i class="fas fa-phone"></i> +7 (999) 123-45-67</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Администрирование</h3>
+                    <p>Версия системы: 1.0.0</p>
+                    <p>Последнее обновление: Сегодня</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 TicketBook. Административная панель.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Специфичные функции для админ-панели
+        
+        let currentSection = 'dashboard';
+        let adminData = {
+            events: [],
+            users: [],
+            bookings: [],
+            stats: {},
+            activity: []
+        };
+        
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAdminAccess();
+            if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'manager')) {
+                initializeAdminPanel();
+                loadAdminData();
+                showSection('dashboard');
+            }
+        });
+        
+        // Проверка прав доступа
+        function checkAdminAccess() {
+            const accessDenied = document.getElementById('accessDenied');
+            const adminContent = document.getElementById('adminContent');
+            
+            if (!currentUser) {
+                // Пользователь не авторизован
+                accessDenied.style.display = 'block';
+                adminContent.style.display = 'none';
+                showNotification('Для доступа к админ-панели необходимо войти в систему', 'error');
+                
+                setTimeout(() => {
+                    window.location.href = 'auth.html?redirect=admin.html';
+                }, 2000);
+                return false;
+            }
+            
+            if (currentUser.role !== 'admin' && currentUser.role !== 'manager') {
+                // Недостаточно прав
+                accessDenied.style.display = 'block';
+                adminContent.style.display = 'none';
+                showNotification('У вас недостаточно прав для доступа к админ-панели', 'error');
+                
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return false;
+            }
+            
+            // Доступ разрешен
+            accessDenied.style.display = 'none';
+            adminContent.style.display = 'block';
+            
+            // Обновляем информацию о пользователе
+            document.getElementById('adminUserName').textContent = currentUser.name;
+            document.getElementById('adminUserRole').textContent = 
+                currentUser.role === 'admin' ? 'Администратор' : 'Менеджер';
+            
+            return true;
+        }
+        
+        // Инициализация админ-панели
+        function initializeAdminPanel() {
+            // Загружаем данные из localStorage
+            loadEventsData();
+            loadUsersData();
+            loadBookingsData();
+            calculateStats();
+            loadRecentActivity();
+            
+            // Обновляем интерфейс
+            updateStatsDisplay();
+            updateEventsTable();
+            updateUsersTable();
+            updateBookingsTable();
+        }
+        
+        // Загрузка данных мероприятий
+        function loadEventsData() {
+            const eventsData = localStorage.getItem('ticketbook_events');
+            adminData.events = eventsData ? JSON.parse(eventsData) : [];
+            
+            // Сортируем по дате (сначала новые)
+            adminData.events.sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
+        
+        // Загрузка данных пользователей
+        function loadUsersData() {
+            const usersData = localStorage.getItem('ticketbook_users');
+            const defaultUsers = [
+                {
+                    id: 1,
+                    email: 'admin@ticketbook.ru',
+                    name: 'Администратор',
+                    role: 'admin',
+                    phone: '+7 (999) 111-11-11',
+                    registeredAt: '2024-01-01T10:00:00',
+                    isActive: true
+                },
+                {
+                    id: 2,
+                    email: 'manager@ticketbook.ru',
+                    name: 'Мария Петрова',
+                    role: 'manager',
+                    phone: '+7 (999) 222-22-22',
+                    registeredAt: '2024-02-15T14:30:00',
+                    isActive: true
+                },
+                {
+                    id: 3,
+                    email: 'user@ticketbook.ru',
+                    name: 'Иван Иванов',
+                    role: 'user',
+                    phone: '+7 (999) 333-33-33',
+                    registeredAt: '2024-03-20T09:15:00',
+                    isActive: true
+                }
+            ];
+            
+            adminData.users = usersData ? JSON.parse(usersData) : defaultUsers;
+            
+            // Добавляем тестового пользователя если массив пустой
+            if (adminData.users.length === 0) {
+                adminData.users = defaultUsers;
+                localStorage.setItem('ticketbook_users', JSON.stringify(defaultUsers));
+            }
+        }
+        
+        // Загрузка данных бронирований
+        function loadBookingsData() {
+            const bookingsData = localStorage.getItem('ticketbook_bookings');
+            adminData.bookings = bookingsData ? JSON.parse(bookingsData) : [];
+            
+            // Генерируем тестовые данные если нет реальных
+            if (adminData.bookings.length === 0) {
+                adminData.bookings = generateTestBookings();
+                localStorage.setItem('ticketbook_bookings', JSON.stringify(adminData.bookings));
+            }
+        }
+        
+        // Генерация тестовых бронирований
+        function generateTestBookings() {
+            const bookings = [];
+            const events = adminData.events.length > 0 ? adminData.events : [
+                {
+                    id: 1,
+                    title: 'Концерт рок-группы "Восток"',
+                    price: 1500
+                },
+                {
+                    id: 2,
+                    title: 'Выставка современного искусства',
+                    price: 500
+                },
+                {
+                    id: 3,
+                    title: 'Спектакль "Гамлет"',
+                    price: 1200
+                }
+            ];
+            
+            const users = adminData.users;
+            const statuses = ['confirmed', 'pending', 'cancelled'];
+            
+            for (let i = 1; i <= 15; i++) {
+                const event = events[Math.floor(Math.random() * events.length)];
+                const user = users[Math.floor(Math.random() * users.length)];
+                const ticketsCount = Math.floor(Math.random() * 5) + 1;
+                const status = statuses[Math.floor(Math.random() * statuses.length)];
+                
+                bookings.push({
+                    id: i,
+                    userId: user.id,
+                    userName: user.name,
+                    userEmail: user.email,
+                    eventId: event.id,
+                    eventTitle: event.title,
+                    ticketsCount: ticketsCount,
+                    totalPrice: event.price * ticketsCount,
+                    bookingDate: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    status: status
+                });
+            }
+            
+            return bookings;
+        }
+        
+        // Расчет статистики
+        function calculateStats() {
+            const totalUsers = adminData.users.length;
+            const totalEvents = adminData.events.length;
+            const totalBookings = adminData.bookings.length;
+            const totalRevenue = adminData.bookings
+                .filter(b => b.status === 'confirmed')
+                .reduce((sum, booking) => sum + booking.totalPrice, 0);
+            
+            adminData.stats = {
+                totalUsers,
+                totalEvents,
+                totalBookings,
+                totalRevenue,
+                activeUsers: adminData.users.filter(u => u.isActive).length,
+                upcomingEvents: adminData.events.filter(e => new Date(e.date) > new Date()).length,
+                pendingBookings: adminData.bookings.filter(b => b.status === 'pending').length,
+                avgTicketPrice: totalBookings > 0 ? 
+                    Math.round(totalRevenue / adminData.bookings
+                        .filter(b => b.status === 'confirmed')
+                        .reduce((sum, b) => sum + b.ticketsCount, 0)) : 0
+            };
+        }
+        
+        // Загрузка последней активности
+        function loadRecentActivity() {
+            adminData.activity = [
+                {
+                    id: 1,
+                    type: 'booking',
+                    user: 'Иван Иванов',
+                    action: 'забронировал билеты на',
+                    target: 'Концерт рок-группы "Восток"',
+                    time: '5 минут назад',
+                    icon: 'fas fa-ticket-alt'
+                },
+                {
+                    id: 2,
+                    type: 'event',
+                    user: 'Администратор',
+                    action: 'добавил новое мероприятие',
+                    target: 'Выставка современного искусства',
+                    time: '2 часа назад',
+                    icon: 'fas fa-calendar-plus'
+                },
+                {
+                    id: 3,
+                    type: 'user',
+                    user: 'Мария Петрова',
+                    action: 'зарегистрировала нового пользователя',
+                    target: 'Алексей Смирнов',
+                    time: 'Вчера',
+                    icon: 'fas fa-user-plus'
+                },
+                {
+                    id: 4,
+                    type: 'payment',
+                    user: 'Система',
+                    action: 'обработан платеж на сумму',
+                    target: '4 500 ₽',
+                    time: '2 дня назад',
+                    icon: 'fas fa-credit-card'
+                }
+            ];
+        }
+        
+        // Обновление отображения статистики
+        function updateStatsDisplay() {
+            document.getElementById('totalUsers').textContent = adminData.stats.totalUsers;
+            document.getElementById('totalEvents').textContent = adminData.stats.totalEvents;
+            document.getElementById('totalBookings').textContent = adminData.stats.totalBookings;
+            document.getElementById('totalRevenue').textContent = 
+                adminData.stats.totalRevenue.toLocaleString('ru-RU') + ' ₽';
+            
+            // Обновляем другие статистики если нужно
+            if (document.getElementById('avgTicketPrice')) {
+                document.getElementById('avgTicketPrice').textContent = 
+                    adminData.stats.avgTicketPrice.toLocaleString('ru-RU') + ' ₽';
+            }
+        }
+        
+        // Обновление таблицы мероприятий
+        function updateEventsTable() {
+            const tbody = document.getElementById('eventsTableBody');
+            if (!tbody) return;
+            
+            let filteredEvents = [...adminData.events];
+            
+            // Применяем фильтры
+            const categoryFilter = document.getElementById('eventsCategoryFilter');
+            const statusFilter = document.getElementById('eventsStatusFilter');
+            const searchFilter = document.getElementById('eventsSearch');
+            
+            if (categoryFilter && categoryFilter.value !== 'all') {
+                filteredEvents = filteredEvents.filter(e => e.category === categoryFilter.value);
+            }
+            
+            if (statusFilter && statusFilter.value !== 'all') {
+                const now = new Date();
+                filteredEvents = filteredEvents.filter(e => {
+                    const eventDate = new Date(e.date);
+                    switch(statusFilter.value) {
+                        case 'active':
+                            return eventDate > now && e.available_tickets > 0;
+                        case 'upcoming':
+                            return eventDate > now;
+                        case 'past':
+                            return eventDate < now;
+                        case 'soldout':
+                            return e.available_tickets === 0;
+                        default:
+                            return true;
+                    }
+                });
+            }
+            
+            if (searchFilter && searchFilter.value) {
+                const searchTerm = searchFilter.value.toLowerCase();
+                filteredEvents = filteredEvents.filter(e => 
+                    e.title.toLowerCase().includes(searchTerm) ||
+                    e.description.toLowerCase().includes(searchTerm) ||
+                    e.location.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Обновляем счетчик
+            document.getElementById('eventsCount').textContent = filteredEvents.length;
+            
+            // Очищаем таблицу
+            tbody.innerHTML = '';
+            
+            // Заполняем таблицу
+            filteredEvents.forEach(event => {
+                const date = new Date(event.date);
+                const formattedDate = date.toLocaleDateString('ru-RU', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                const isPast = date < new Date();
+                const isSoldOut = event.available_tickets === 0;
+                const isUpcoming = date > new Date() && !isSoldOut;
+                
+                let status = '';
+                let statusClass = '';
+                
+                if (isPast) {
+                    status = 'Прошедшее';
+                    statusClass = 'status-inactive';
+                } else if (isSoldOut) {
+                    status = 'Распродано';
+                    statusClass = 'status-inactive';
+                } else if (isUpcoming) {
+                    status = 'Предстоящее';
+                    statusClass = 'status-active';
+                } else {
+                    status = 'Активное';
+                    statusClass = 'status-active';
+                }
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${event.id}</td>
+                    <td>
+                        <strong>${event.title}</strong><br>
+                        <small class="text-muted">${event.location}</small>
+                    </td>
+                    <td>
+                        <span class="status-badge">${event.category}</span>
+                    </td>
+                    <td>${formattedDate}</td>
+                    <td>${event.price.toLocaleString('ru-RU')} ₽</td>
+                    <td>
+                        ${event.available_tickets} / ${event.total_tickets}
+                        <div class="progress" style="height: 5px; margin-top: 5px;">
+                            <div class="progress-bar" style="width: ${(event.available_tickets / event.total_tickets) * 100}%"></div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge ${statusClass}">${status}</span>
+                    </td>
+                    <td>
+                        <button class="btn btn-small btn-outline" onclick="editEvent(${event.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-small btn-outline btn-danger" onclick="deleteEvent(${event.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Обновление таблицы пользователей
+        function updateUsersTable() {
+            const tbody = document.getElementById('usersTableBody');
+            if (!tbody) return;
+            
+            let filteredUsers = [...adminData.users];
+            
+            // Применяем фильтры
+            const roleFilter = document.getElementById('usersRoleFilter');
+            const statusFilter = document.getElementById('usersStatusFilter');
+            const searchFilter = document.getElementById('usersSearch');
+            
+            if (roleFilter && roleFilter.value !== 'all') {
+                filteredUsers = filteredUsers.filter(u => u.role === roleFilter.value);
+            }
+            
+            if (statusFilter && statusFilter.value !== 'all') {
+                filteredUsers = filteredUsers.filter(u => 
+                    statusFilter.value === 'active' ? u.isActive : !u.isActive
+                );
+            }
+            
+            if (searchFilter && searchFilter.value) {
+                const searchTerm = searchFilter.value.toLowerCase();
+                filteredUsers = filteredUsers.filter(u => 
+                    u.name.toLowerCase().includes(searchTerm) ||
+                    u.email.toLowerCase().includes(searchTerm) ||
+                    (u.phone && u.phone.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            // Очищаем таблицу
+            tbody.innerHTML = '';
+            
+            // Заполняем таблицу
+            filteredUsers.forEach(user => {
+                const regDate = new Date(user.registeredAt);
+                const formattedDate = regDate.toLocaleDateString('ru-RU', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                });
+                
+                const roleNames = {
+                    'admin': 'Администратор',
+                    'manager': 'Менеджер',
+                    'user': 'Пользователь'
+                };
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>
+                        <strong>${user.name}</strong><br>
+                        <small class="text-muted">${user.email}</small>
+                    </td>
+                    <td>${user.email}</td>
+                    <td>
+                        <span class="status-badge ${user.role === 'admin' ? 'status-active' : 'status-confirmed'}">
+                            ${roleNames[user.role]}
+                        </span>
+                    </td>
+                    <td>${user.phone || 'Не указан'}</td>
+                    <td>${formattedDate}</td>
+                    <td>
+                        <span class="status-badge ${user.isActive ? 'status-active' : 'status-inactive'}">
+                            ${user.isActive ? 'Активен' : 'Неактивен'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-small btn-outline" onclick="editUser(${user.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-small btn-outline ${user.isActive ? 'btn-warning' : 'btn-success'}" 
+                                onclick="toggleUserStatus(${user.id})">
+                            <i class="fas ${user.isActive ? 'fa-ban' : 'fa-check'}"></i>
+                        </button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Обновление таблицы бронирований
+        function updateBookingsTable() {
+            const tbody = document.getElementById('bookingsTableBody');
+            if (!tbody) return;
+            
+            let filteredBookings = [...adminData.bookings];
+            
+            // Применяем фильтры
+            const statusFilter = document.getElementById('bookingsStatusFilter');
+            const dateFrom = document.getElementById('bookingsDateFrom');
+            const dateTo = document.getElementById('bookingsDateTo');
+            
+            if (statusFilter && statusFilter.value !== 'all') {
+                filteredBookings = filteredBookings.filter(b => b.status === statusFilter.value);
+            }
+            
+            if (dateFrom && dateFrom.value) {
+                const fromDate = new Date(dateFrom.value);
+                filteredBookings = filteredBookings.filter(b => 
+                    new Date(b.bookingDate) >= fromDate
+                );
+            }
+            
+            if (dateTo && dateTo.value) {
+                const toDate = new Date(dateTo.value + 'T23:59:59');
+                filteredBookings = filteredBookings.filter(b => 
+                    new Date(b.bookingDate) <= toDate
+                );
+            }
+            
+            // Сортируем по дате (сначала новые)
+            filteredBookings.sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate));
+            
+            // Очищаем таблицу
+            tbody.innerHTML = '';
+            
+            // Заполняем таблицу
+            filteredBookings.forEach(booking => {
+                const bookingDate = new Date(booking.bookingDate);
+                const formattedDate = bookingDate.toLocaleDateString('ru-RU', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                const statusNames = {
+                    'confirmed': 'Подтверждено',
+                    'pending': 'Ожидание',
+                    'cancelled': 'Отменено'
+                };
+                
+                const statusClasses = {
+                    'confirmed': 'status-confirmed',
+                    'pending': 'status-pending',
+                    'cancelled': 'status-inactive'
+                };
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${booking.id}</td>
+                    <td>
+                        <strong>${booking.userName}</strong><br>
+                        <small class="text-muted">${booking.userEmail}</small>
+                    </td>
+                    <td>${booking.eventTitle}</td>
+                    <td>${formattedDate}</td>
+                    <td>${booking.ticketsCount}</td>
+                    <td>
+                        <strong>${booking.totalPrice.toLocaleString('ru-RU')} ₽</strong><br>
+                        <small class="text-muted">${Math.round(booking.totalPrice / booking.ticketsCount)} ₽/билет</small>
+                    </td>
+                    <td>
+                        <span class="status-badge ${statusClasses[booking.status]}">
+                            ${statusNames[booking.status]}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-small btn-outline" onclick="viewBooking(${booking.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        ${booking.status === 'pending' ? `
+                            <button class="btn btn-small btn-success" onclick="confirmBooking(${booking.id})">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        ` : ''}
+                        ${booking.status !== 'cancelled' ? `
+                            <button class="btn btn-small btn-danger" onclick="cancelBooking(${booking.id})">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        ` : ''}
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Показать раздел
+        function showSection(sectionName) {
+            currentSection = sectionName;
+            
+            // Скрываем все разделы
+            document.querySelectorAll('.admin-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Показываем выбранный раздел
+            const targetSection = document.getElementById(sectionName + 'Section');
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+            
+            // Обновляем активное меню
+            document.querySelectorAll('.admin-menu a').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            const activeLink = document.querySelector(`.admin-menu a[onclick*="${sectionName}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+            
+            // Обновляем данные раздела
+            switch(sectionName) {
+                case 'dashboard':
+                    updateStatsDisplay();
+                    updateRecentActivity();
+                    break;
+                case 'events':
+                    updateEventsTable();
+                    break;
+                case 'users':
+                    updateUsersTable();
+                    break;
+                case 'bookings':
+                    updateBookingsTable();
+                    break;
+                case 'reports':
+                    updateReports();
+                    break;
+            }
+        }
+        
+        // Обновление последней активности
+        function updateRecentActivity() {
+            const container = document.getElementById('recentActivity');
+            if (!container) return;
+            
+            container.innerHTML = adminData.activity.map(activity => `
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="${activity.icon}"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-text">
+                            <strong>${activity.user}</strong> ${activity.action} 
+                            <strong>${activity.target}</strong>
+                        </div>
+                        <div class="activity-time">${activity.time}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Фильтрация таблицы мероприятий
+        function filterEventsTable() {
+            updateEventsTable();
+        }
+        
+        // Фильтрация таблицы пользователей
+        function filterUsersTable() {
+            updateUsersTable();
+        }
+        
+        // Фильтрация таблицы бронирований
+        function filterBookingsTable() {
+            updateBookingsTable();
+        }
+        
+        // Показать модальное окно добавления мероприятия
+        function showAddEventModal() {
+            document.getElementById('addEventModal').classList.add('active');
+        }
+        
+        // Показать модальное окно добавления пользователя
+        function showAddUserModal() {
+            document.getElementById('addUserModal').classList.add('active');
+        }
+        
+        // Закрыть модальное окно
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+        
+        // Обработка добавления мероприятия
+        function handleAddEvent(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            const newEvent = {
+                id: Date.now(),
+                title: formData.get('title') || form.querySelector('input[type="text"]').value,
+                description: form.querySelector('textarea').value,
+                category: form.querySelector('select').value,
+                date: form.querySelector('input[type="datetime-local"]').value,
+                location: form.querySelectorAll('input[type="text"]')[1].value,
+                price: parseInt(form.querySelector('input[type="number"]').value),
+                total_tickets: parseInt(form.querySelectorAll('input[type="number"]')[1].value),
+                available_tickets: parseInt(form.querySelectorAll('input[type="number"]')[1].value),
+                image_url: form.querySelector('input[type="url"]').value || 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622'
+            };
+            
+            // Добавляем мероприятие
+            adminData.events.push(newEvent);
+            localStorage.setItem('ticketbook_events', JSON.stringify(adminData.events));
+            
+            // Обновляем статистику
+            calculateStats();
+            updateStatsDisplay();
+            updateEventsTable();
+            
+            // Закрываем модальное окно
+            closeModal('addEventModal');
+            
+            // Показываем уведомление
+            showNotification('Мероприятие успешно добавлено', 'success');
+            
+            // Добавляем активность
+            adminData.activity.unshift({
+                id: adminData.activity.length + 1,
+                type: 'event',
+                user: currentUser.name,
+                action: 'добавил новое мероприятие',
+                target: newEvent.title,
+                time: 'Только что',
+                icon: 'fas fa-calendar-plus'
+            });
+            
+            // Сбрасываем форму
+            form.reset();
+        }
+        
+        // Обработка добавления пользователя
+        function handleAddUser(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const email = form.querySelector('input[type="email"]').value;
+            const name = form.querySelectorAll('input[type="text"]')[0].value;
+            const role = form.querySelector('select').value;
+            const password = form.querySelector('input[type="password"]').value;
+            
+            const newUser = {
+                id: Date.now(),
+                email: email,
+                name: name,
+                role: role,
+                password: password,
+                registeredAt: new Date().toISOString(),
+                isActive: true
+            };
+            
+            // Добавляем пользователя
+            adminData.users.push(newUser);
+            localStorage.setItem('ticketbook_users', JSON.stringify(adminData.users));
+            
+            // Обновляем статистику
+            calculateStats();
+            updateStatsDisplay();
+            updateUsersTable();
+            
+            // Закрываем модальное окно
+            closeModal('addUserModal');
+            
+            // Показываем уведомление
+            showNotification('Пользователь успешно добавлен', 'success');
+            
+            // Добавляем активность
+            adminData.activity.unshift({
+                id: adminData.activity.length + 1,
+                type: 'user',
+                user: currentUser.name,
+                action: 'добавил нового пользователя',
+                target: newUser.name,
+                time: 'Только что',
+                icon: 'fas fa-user-plus'
+            });
+            
+            // Сбрасываем форму
+            form.reset();
+        }
+        
+        // Редактирование мероприятия
+        function editEvent(eventId) {
+            showNotification('Редактирование мероприятия (в разработке)', 'info');
+        }
+        
+        // Удаление мероприятия
+        function deleteEvent(eventId) {
+            if (confirm('Вы уверены, что хотите удалить это мероприятие?')) {
+                adminData.events = adminData.events.filter(e => e.id !== eventId);
+                localStorage.setItem('ticketbook_events', JSON.stringify(adminData.events));
+                
+                calculateStats();
+                updateStatsDisplay();
+                updateEventsTable();
+                
+                showNotification('Мероприятие удалено', 'success');
+            }
+        }
+        
+        // Редактирование пользователя
+        function editUser(userId) {
+            showNotification('Редактирование пользователя (в разработке)', 'info');
+        }
+        
+        // Переключение статуса пользователя
+        function toggleUserStatus(userId) {
+            const user = adminData.users.find(u => u.id === userId);
+            if (user) {
+                user.isActive = !user.isActive;
+                localStorage.setItem('ticketbook_users', JSON.stringify(adminData.users));
+                updateUsersTable();
+                
+                showNotification(`Пользователь ${user.isActive ? 'активирован' : 'деактивирован'}`, 'success');
+            }
+        }
+        
+        // Просмотр бронирования
+        function viewBooking(bookingId) {
+            const booking = adminData.bookings.find(b => b.id === bookingId);
+            if (booking) {
+                alert(`Детали бронирования #${booking.id}\n\n` +
+                      `Пользователь: ${booking.userName}\n` +
+                      `Мероприятие: ${booking.eventTitle}\n` +
+                      `Билетов: ${booking.ticketsCount}\n` +
+                      `Сумма: ${booking.totalPrice} ₽\n` +
+                      `Статус: ${booking.status}\n` +
+                      `Дата: ${new Date(booking.bookingDate).toLocaleString('ru-RU')}`);
+            }
+        }
+        
+        // Подтверждение бронирования
+        function confirmBooking(bookingId) {
+            const booking = adminData.bookings.find(b => b.id === bookingId);
+            if (booking && booking.status === 'pending') {
+                booking.status = 'confirmed';
+                localStorage.setItem('ticketbook_bookings', JSON.stringify(adminData.bookings));
+                updateBookingsTable();
+                
+                showNotification('Бронирование подтверждено', 'success');
+            }
+        }
+        
+        // Отмена бронирования
+        function cancelBooking(bookingId) {
+            const booking = adminData.bookings.find(b => b.id === bookingId);
+            if (booking && booking.status !== 'cancelled') {
+                booking.status = 'cancelled';
+                localStorage.setItem('ticketbook_bookings', JSON.stringify(adminData.bookings));
+                updateBookingsTable();
+                
+                showNotification('Бронирование отменено', 'warning');
+            }
+        }
+        
+        // Обновление статистики
+        function refreshStats() {
+            calculateStats();
+            updateStatsDisplay();
+            showNotification('Статистика обновлена', 'success');
+        }
+        
+        // Экспорт данных
+        function exportData() {
+            const data = {
+                users: adminData.users,
+                events: adminData.events,
+                bookings: adminData.bookings,
+                stats: adminData.stats,
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `ticketbook_export_${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showNotification('Данные экспортированы', 'success');
+        }
+        
+        // Экспорт бронирований в CSV
+        function exportBookings() {
+            const headers = ['ID', 'Пользователь', 'Email', 'Мероприятие', 'Билетов', 'Сумма', 'Статус', 'Дата брони'];
+            
+            const csvRows = [
+                headers.join(','),
+                ...adminData.bookings.map(b => [
+                    b.id,
+                    `"${b.userName}"`,
+                    `"${b.userEmail}"`,
+                    `"${b.eventTitle}"`,
+                    b.ticketsCount,
+                    b.totalPrice,
+                    b.status,
+                    new Date(b.bookingDate).toISOString()
+                ].join(','))
+            ];
+            
+            const csvString = csvRows.join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `bookings_${new Date().toISOString().split('T')[0]}.csv`);
+            a.click();
+            
+            showNotification('Бронирования экспортированы в CSV', 'success');
+        }
+        
+        // Генерация отчета
+        function generateReport() {
+            showNotification('Отчет сгенерирован и отправлен на email', 'success');
+        }
+        
+        // Обновление отчетов
+        function updateReports() {
+            // Обновляем графики и статистику отчетов
+            if (document.getElementById('avgTicketPrice')) {
+                document.getElementById('avgTicketPrice').textContent = 
+                    adminData.stats.avgTicketPrice.toLocaleString('ru-RU') + ' ₽';
+            }
+            
+            // Здесь можно добавить логику для обновления графиков
+        }
+        
+        // Показать вкладку настроек
+        function showSettingsTab(tabName) {
+            // Обновляем активные вкладки
+            document.querySelectorAll('.settings-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.settings-tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Активируем выбранную вкладку
+            const activeTab = document.querySelector(`.settings-tab[onclick*="${tabName}"]`);
+            const activeContent = document.getElementById(tabName + 'Settings');
+            
+            if (activeTab) activeTab.classList.add('active');
+            if (activeContent) activeContent.classList.add('active');
+        }
+        
+        // Выход из админ-панели
+        function logoutAdmin() {
+            if (confirm('Вы уверены, что хотите выйти из админ-панели?')) {
+                currentUser = null;
+                localStorage.removeItem('ticketbook_user');
+                window.location.href = 'auth.html';
+            }
+        }
+        
+        // Обновление стилей для админ-панели
+        const adminStyles = document.createElement('style');
+        adminStyles.textContent = `
+            .access-denied {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 400px;
+                text-align: center;
+            }
+            
+            .access-denied-content {
+                max-width: 400px;
+                padding: 2rem;
+            }
+            
+            .access-denied-content i {
+                margin-bottom: 1.5rem;
+                color: #f44336;
+            }
+            
+            .access-denied-content h2 {
+                margin-bottom: 1rem;
+                color: #333;
+            }
+            
+            .access-denied-content p {
+                margin-bottom: 1.5rem;
+                color: #666;
+            }
+            
+            .quick-actions {
+                margin: 2rem 0;
+            }
+            
+            .actions-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+                margin-top: 1rem;
+            }
+            
+            .action-btn {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 1.5rem;
+                background: white;
+                border: 2px solid #f0f0f0;
+                border-radius: 10px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-align: center;
+            }
+            
+            .action-btn:hover {
+                border-color: #4a6bdf;
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
+            
+            .action-btn i {
+                font-size: 2rem;
+                margin-bottom: 0.5rem;
+                color: #4a6bdf;
+            }
+            
+            .recent-activity {
+                margin-top: 2rem;
+            }
+            
+            .activity-list {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+                margin-top: 1rem;
+            }
+            
+            .activity-item {
+                display: flex;
+                gap: 1rem;
+                padding: 1rem;
+                background: #f8f9fa;
+                border-radius: 5px;
+                align-items: flex-start;
+            }
+            
+            .activity-icon {
+                width: 40px;
+                height: 40px;
+                background: #4a6bdf;
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .activity-content {
+                flex: 1;
+            }
+            
+            .activity-text {
+                margin-bottom: 0.25rem;
+                color: #333;
+            }
+            
+            .activity-time {
+                font-size: 0.8rem;
+                color: #666;
+            }
+            
+            .table-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid #eee;
+            }
+            
+            .table-info {
+                color: #666;
+                font-size: 0.9rem;
+            }
+            
+            .charts-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1.5rem;
+                margin-bottom: 2rem;
+            }
+            
+            .reports-stats {
+                margin-top: 2rem;
+            }
+            
+            .stats-cards {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+                margin-top: 1rem;
+            }
+            
+            .settings-nav {
+                display: flex;
+                gap: 1rem;
+                margin-bottom: 2rem;
+                border-bottom: 2px solid #eee;
+            }
+            
+            .settings-tab {
+                padding: 0.75rem 1.5rem;
+                background: none;
+                border: none;
+                border-bottom: 3px solid transparent;
+                cursor: pointer;
+                color: #666;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+            }
+            
+            .settings-tab:hover,
+            .settings-tab.active {
+                color: #4a6bdf;
+                border-bottom-color: #4a6bdf;
+            }
+            
+            .settings-tab-content {
+                display: none;
+            }
+            
+            .settings-tab-content.active {
+                display: block;
+            }
+            
+            .btn-small {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.8rem;
+            }
+            
+            .btn-danger {
+                background-color: #f44336;
+                border-color: #f44336;
+                color: white;
+            }
+            
+            .btn-danger:hover {
+                background-color: #d32f2f;
+                border-color: #d32f2f;
+            }
+            
+            .btn-warning {
+                background-color: #ff9800;
+                border-color: #ff9800;
+                color: white;
+            }
+            
+            .btn-warning:hover {
+                background-color: #f57c00;
+                border-color: #f57c00;
+            }
+            
+            .btn-success {
+                background-color: #4CAF50;
+                border-color: #4CAF50;
+                color: white;
+            }
+            
+            .btn-success:hover {
+                background-color: #388E3C;
+                border-color: #388E3C;
+            }
+            
+            .progress {
+                background-color: #e9ecef;
+                border-radius: 0.25rem;
+                overflow: hidden;
+            }
+            
+            .progress-bar {
+                background-color: #4a6bdf;
+                height: 100%;
+                transition: width 0.6s ease;
+            }
+            
+            .text-muted {
+                color: #6c757d !important;
+            }
+            
+            @media (max-width: 768px) {
+                .admin-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 1rem;
+                }
+                
+                .admin-actions {
+                    width: 100%;
+                    justify-content: flex-start;
+                }
+                
+                .stats-grid {
+                    grid-template-columns: 1fr;
+                }
+                
+                .actions-grid {
+                    grid-template-columns: 1fr;
+                }
+                
+                .charts-grid {
+                    grid-template-columns: 1fr;
+                }
+                
+                .settings-nav {
+                    flex-direction: column;
+                }
+            }
+        `;
+        
+        document.head.appendChild(adminStyles);
+    </script>
+</body>
+</html>
